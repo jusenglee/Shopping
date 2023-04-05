@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>쇼핑몰</title>
+  <meta name="viewport" content="width=device-width initial-scale=1.0"/>
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+          crossorigin="anonymous"></script>
+  <script src="js/jquery-1.11.3.min.js"></script>
+  <script type="text/javascript">
+			$(document).ready(function() {
+				var sw = false;
+				// 클릭했을때 들어가고 나오는 것을 하기 위해 변수 선언
+				$('#image').click(function() {
+					if(sw == false) {
+						$(this).next().animate({
+							left : 2200
+						}, 1000);
+						sw = true;
+					} else {
+						$(this).next().animate({
+							left : -2000
+						}, 1000);
+						sw = false;
+					}
+				});
+			});
+
+    </script>
+  <style>
+			body {
+				font-family: NanumGothic;
+				font-size: 30px;
+			}
+			#wrapper {
+				width: 100%;
+				height: 1600px;
+				margin: 0 auto;
+			}
+			#header {
+				width: 250px;
+				height: 1000px;
+				background-color: #fff;
+				position: fixed;
+				margin: 0 auto;
+			}
+			#logo img {
+				max-width: 300px;
+				height: auto;
+				margin: 35px;
+				cursor: pointer;
+			}
+			#middle {
+				width: 1300px;
+				height: 1600px;
+			}
+			#middle img{
+				width:1000px;
+				height:667px;
+				margin-top: 300px;
+				margin-left: 300px;
+			}
+			#middle #text{
+				width:1000px;
+				height:667px;
+				margin-top: -670px;
+				margin-left:300px;
+				font-size: 50px;
+				text-align: center;
+				line-height:667px;
+				color: #ffffff;
+				background: rgba(0,0,0,0.3);
+				transition: opacity .5s;
+				opacity: 1;
+			}
+			#middle #text:hover {
+				cursor:pointer;
+				opacity: 0.6;
+			}
+			#nav {
+				width: 110px;
+				position: fixed;
+				top: 500px;
+				margin: 0 70px;
+				z-index: 10;
+			}
+			#nav #image {
+				top: 400px;
+				margin: 10px auto;
+				background-repeat: no-repeat;
+				background-position: center;
+				cursor: pointer;
+			}
+			#menu {
+				margin-top: -130px;
+				height: 200px;
+				position: absolute;
+				left: 10%;
+				z-index:10;
+			}
+			.main {
+				position: absolute;
+				z-index: 1;
+				left: -2000px;
+				width: 1300px;
+				height: 200px;
+				opacity: 0.8;
+				background: #fff;
+			}
+			#menu .main > li {
+				list-style: none;
+				display: inline-block;
+				width: 200px;
+				height: 100px;
+				position: relative;
+				padding: 0 10px;
+				left: 100px;
+				text-align: center;
+				z-index: 3;
+				font-size: 20px;
+			}
+			#menu .main > li a {
+				font-style: #000000;
+			}
+			#menu #submenu > li {
+				list-style: none;
+			}
+			#menu .main > li:hover #submenu {
+				z-index: 20;
+				display: block;
+			}
+			#menu .main > li a {
+				display: block;
+				left: 0;
+				color: #000;
+			}
+			#menu .main > li a:hover {
+				background: #138535;
+				color: #fff;
+			}
+			#menu .main #submenu {
+				position: absolute;
+				top: 30px;
+				width: 120px;
+				display: none;
+				padding-right: 30px;
+			}
+			#submenu li {
+				list-style: none;
+			}
+
+    </style>
+</head>
+<body>
+<div id="wrapper">
+  <div id="header">
+    <div id="logo">
+      <a href="index.html"><img src="https://upload3.inven.co.kr/upload/2021/04/13/bbs/i13340938334.png" alt="jaeseok-logo" border="0"></a>
+    </div>
+    <div id="nav">
+      <img id="image" src="image/menu.jpg"/>
+      <div id="menu">
+        <ul class="main">
+          <li id="clothing mainmenu">
+            <a href="#">CLOTHING</a>
+            <ul id="submenu">
+              <li>
+                <a href="new.html">NEW ARRIVAL</a>
+              </li>
+              <li>
+                <a href="outer.html">OUTER</a>
+              </li>
+              <li>
+                <a href="knit.html">KNIT</a>
+              </li>
+              <li>
+                <a href="shirt.html">SHIRT</a>
+              </li>
+              <li>
+                <a href="top.html">TOP</a>
+              </li>
+              <li>
+                <a href="bottom.html">BOTTOM</a>
+              </li>
+            </ul>
+          </li>
+          <li id="lookbook mainmenu">
+            <a href="#">LOOKBOOK</a>
+            <ul id="submenu">
+              <li>
+                <a href="dailylook19FW.html">FW 19</a>
+              </li>
+              <li>
+                <a href="dailylook20SS.html">SS 20</a>
+              </li>
+            </ul>
+          </li>
+          <li id="mypage mainmenu">
+            <a href="mypage.html">MY PAGE</a>
+          </li>
+          <li id="submenu mainmenu">
+            <a href="login.html">LOGIN</a>
+            <ul id="submenu">
+              <li>
+                <a href="join.html">JOIN</a>
+              </li>
+            </ul>
+          </li>
+          <li id="community mainmenu">
+            <a href="community.html">COMMUNITY</a>
+            <ul id="submenu">
+              <li>
+                <a href="notice.html">notice</a>
+              </li>
+              <li>
+                <a href="faq.html">FAQ</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div id="middle">
+    <a href="lookbook.jsp"><img id="main-image" src="image/main.jpg"/></a>
+    <div id="text">
+      Shop
+    </div>
+  </div>
+</div>
+</body>
+</html>
