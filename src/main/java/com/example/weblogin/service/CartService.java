@@ -61,11 +61,11 @@ public class CartService {
     //카트 상품 모두 주문
     public void orderAllCartItems(Long memberId) {
         // 회원과 장바구니 조회
-        Member member = ServiceUtils.getOrThrow(memberRepository.findById(memberId), "Member not found");
-        Cart cart = ServiceUtils.getOrThrow(cartRepository.findByMember(member), "Cart not found");
+        Member member = ServiceUtils.getOrThrow(memberRepository.findById(memberId), "사용자를 찾을 수 없습니다");
+        Cart cart = ServiceUtils.getOrThrow(cartRepository.findByMember(member), "카트를 찾을 수 없습니다");
 
         if (cart.isEmpty()) {
-            throw new IllegalStateException("Cart is empty");
+            throw new IllegalStateException("카트가 비었습니다");
         }
         //배송 정보 생성
         Delivery delivery = new Delivery();

@@ -39,7 +39,7 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus;  //상품 판매 상태
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Kategorie category;
 
@@ -48,22 +48,28 @@ public class Item extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Brand brand;
 
-    @ManyToMany //좋아요 추가, itemView.html에 좋아요 버튼 추가 필요 jh
-                //본래 @ManyToMany 다대다 관계의 경우 그대로 사용하지 못하고 반드시 정규화를 통해 중간 테이블을 만들어줘야 합니다. dltmdwn00
-    Set<Member> heart;
+    @Column(columnDefinition = "integer default 0", nullable = false)//조회수 jh
+    //본래 @ManyToMany 다대다 관계의 경우 그대로 사용하지 못하고 반드시 정규화를 통해 중간 테이블을 만들어줘야 합니다. dltmdwn00
+    private Integer heart;
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private Integer countview; //조회수 jh
 
     @Builder
-    public Item(String itemNm, Integer price, Integer stockNumber, String itemDetail, ItemSellStatus itemSellStatus, LocalDateTime createdDate) {
+    public Item(String itemNm, Integer price, Integer stockNumber,
+                String itemDetail, ItemSellStatus itemSellStatus,
+                LocalDateTime createdDate, Integer countview, Integer heart, Kategorie category) {
         this.itemNm = itemNm;
         this.price = price;
         this.stockNumber =stockNumber;
         this.itemDetail = itemDetail;
         this.itemSellStatus = itemSellStatus;
         this.createdDate = createdDate;
+        this.countview = countview;
+        this.heart = heart;
+        this.category = category;
     }
+
     public void updateItem(ItemFormDto itemFormDto) {
         this.itemNm = itemFormDto.getItemNm();
         this.price = itemFormDto.getPrice();
@@ -107,5 +113,8 @@ public class Item extends BaseEntity {
             throw new IllegalStateException("이미 판매중인 상품입니다.");
         }
         this.itemSellStatus = ItemSellStatus.SELL;
+    }
+    public void increaseHeart() {
+        this.heart += 1;
     }
 }

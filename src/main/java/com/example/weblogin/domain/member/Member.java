@@ -36,10 +36,6 @@ public class Member extends BaseEntity {
     @Column(name = "member_name")
     private String name;
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
     @NotBlank
     @Column(name = "member_iphone")
     private String phone;
@@ -56,7 +52,9 @@ public class Member extends BaseEntity {
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
-
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
     public String getName() {
         return name;
     }
@@ -97,9 +95,17 @@ public class Member extends BaseEntity {
                 member.setAddress(memberFormDto.getAddress());
                 member.setPhone(memberFormDto.getPhone());
                 member.setPassword(passwordEncoder.encode(memberFormDto.getPassword()));  //암호화처리
-                member.setRole(MemberRole.USER);
+                member.setRole(memberFormDto.getRole());
 
         return member;
+    }
+
+    private void setRole(String role) {
+        if(role.equals("ROLE_ADMIN")){
+            this.role = MemberRole.ADMIN;
+        }else{
+            this.role = MemberRole.USER;
+        }
     }
 
     public void setEmail(String email) {

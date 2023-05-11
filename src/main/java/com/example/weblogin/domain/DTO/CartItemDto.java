@@ -20,5 +20,4 @@ public class CartItemDto {
         this.quantity = cartItem.getQuantity();
     }
 
-    // getter/setter 생략
 }

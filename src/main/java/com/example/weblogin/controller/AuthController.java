@@ -11,6 +11,7 @@ import com.example.weblogin.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -54,6 +55,7 @@ public class AuthController {
 
     @PostMapping("/new")
     public String signup(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model) {
+        System.out.println(memberFormDto.getRole());
         System.out.println("Signup endpoint reached");
         if (bindingResult.hasErrors()) {
             return "/signup";
@@ -68,27 +70,9 @@ public class AuthController {
         return "/signin";
     }
 
-
+    @Cacheable(value = "session", key = "#authentication.name")
     @GetMapping("/username")
-    public  ResponseEntity<Member> getUser(Authentication authentication) {
-//        System.out.println("username endpoint contact!");
-//        System.out.println("ROLE_" + MemberRole.USER.name());
-
-        if (authentication != null && authentication.isAuthenticated()) {
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            for (GrantedAuthority authority : authorities) {
-                System.out.println();
-                if (authority.getAuthority().equals("ROLE_" + MemberRole.USER.name())) {
-                    Member user = memberRepository.findByEmail(authentication.getName());
-//                    System.out.println(user.getName()); // 현재 로그인한 사용자의 이름 출력 테스트
-                    return new ResponseEntity<>(user, HttpStatus.OK);
-                } else if (authority.getAuthority().equals("ROLE_" + MemberRole.ADMIN.name())) {
-                    Member admin = memberRepository.findByName(authentication.getName());
-                    return new ResponseEntity<>(admin, HttpStatus.OK);
-                }
-            }
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Member> getUser(Authentication authentication) {
+        return memberService.getUser(authentication);
     }
 }

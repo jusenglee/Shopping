@@ -2,6 +2,7 @@ package com.example.weblogin.domain.item;
 
 
 import com.example.weblogin.domain.DTO.ItemSearchRequestDTO;
+import com.example.weblogin.domain.DTO.MainItemDto;
 import com.example.weblogin.domain.itemCategory.QKategorie;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -25,7 +26,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<Item> search(ItemSearchRequestDTO request) {
+    public Page<MainItemDto> search(ItemSearchRequestDTO request) {
         QItem item = QItem.item;
         QKategorie kategorie = new QKategorie("kategorie");
 
@@ -38,10 +39,11 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         if (request.getBrandIds() != null && !request.getBrandIds().isEmpty()) {
             builder.and(item.brand.id.in(request.getBrandIds()));
         }
-
-        List<Long> categoryIds = request.getCategoryIds() != null ? request.getCategoryIds() : Collections.emptyList();
-        BooleanExpression categoryCondition = kategorie.id.in(categoryIds.toArray(new Long[0]));
-        builder.and(categoryCondition);
+        if (request.getCategoryIds() != null && !request.getCategoryIds().isEmpty()) {
+            List<Long> categoryIds = request.getCategoryIds() != null ? request.getCategoryIds() : Collections.emptyList();
+            BooleanExpression categoryCondition = kategorie.id.in(categoryIds.toArray(new Long[0]));
+            builder.and(categoryCondition);
+        }
 
         List<OrderSpecifier<?>> orders = new ArrayList<>();
         if (request.getSortBy() != null) {
@@ -62,7 +64,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
-        JPAQuery<Item> query = new JPAQuery<>(entityManager);
+        JPAQuery<MainItemDto> query = new JPAQuery<>(entityManager);
         query.select(item)
                 .from(item)
                 .join(item.category, kategorie)
@@ -71,8 +73,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
-        List<Item> items = query.fetch();
+        List<MainItemDto> mainItemDto = query.fetch();
         long totalCount = query.fetchCount();
-        return new PageImpl<>(items, pageable, totalCount);
+        return new PageImpl<>(mainItemDto, pageable, totalCount);
     }
 }

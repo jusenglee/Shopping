@@ -34,14 +34,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter  {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //super.configure(http); // 이 코드 삭제하면 기존 시큐리티가 가진 모든 기능 비활성화
-        //http.csrf().disable(); // csrf 토큰 비활성화 코드
+//        super.configure(http); // 이 코드 삭제하면 기존 시큐리티가 가진 모든 기능 비활성화
+//        http.csrf().disable(); // csrf 토큰 비활성화 코드
 
         http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());// csrf 토큰 활성화 코드
         http.authorizeRequests()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/user/**").authenticated()
-//                .antMatchers("/members/signup", "/members/signin", "/css/**", "/js/**", "/images/**","/members/new").permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").authenticated()
+                .antMatchers("/members/signup", "/members/signin", "/css/**", "/js/**", "/images/**","/members/new").permitAll()
                 .anyRequest().permitAll()
                 .and()
 

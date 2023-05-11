@@ -1,201 +1,71 @@
-    <!DOCTYPE html>
-    <html xmlns:th="http://thymeleaf.org"
-          xmlns:sec="http://thymeleaf.org/extras/spring-security"
-    >
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <meta name="_csrf" th:content="${_csrf.token}"/>
-        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-        <title>쇼핑몰</title>
-        <!-- Bootstrap icons-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="/css/styles.css" rel="stylesheet" />
-    </head>
-    <body>
-    <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container px-4 px-lg-5">
-            <a class="navbar-brand" th:href="@{/main}">쇼핑몰</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{/main}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" th:href="@{admin/item/new}" sec:authorize="hasRole('ADMIN')">upload</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" th:href="@{admin/{id}(id=${member.getId()})/manage}" sec:authorize="hasRole('ADMIN')">Manage</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" th:href="@{/item/list}">All Products</a></li>
-                            <li><hr class="dropdown-divider" /></li>
-                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <form th:action="@{/members/signin}" sec:authorize="!isAuthenticated()">
-                    <button class="btn btn-outline-dark" type="submit">
-                        로그인
-                    </button>
-                </form>
-                <form th:action="@{/members/signup}" sec:authorize="!isAuthenticated()">
-                    <button class="btn btn-outline-dark" type="submit">
-                        회원가입
-                    </button>
-                </form>
+<!--resources/templates/레이아웃_본문_복사용.html-->
 
-                <div sec:authorize="isAuthenticated()">
-                <form id="user-form" >
-                    <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle btn-outline-dark" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            회원님
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#">마이페이지</a></li>
-                            <li><a class="dropdown-item" href="#">장바구니</a></li>
-                            <li><a class="dropdown-item" href="#">주문내역</a></li>
-                        </ul>
-                    </div>
-                </form>
-                </div>
-
-                <div sec:authorize="hasRole('ADMIN')">
-                <form id="admin-form">
-                    <div class="dropdown">
-                       <button class="btn btn-default dropdown-toggle btn-outline-dark" type="button" id="dropdownMenuButton_admin" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            판매자님
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                           <li><a class="dropdown-item"  href="#">판매자페이지</a></li>
-                         <li><a class="dropdown-item"   href="#">상품관리</a></li>
-                            <li><a class="dropdown-item" href="#">판매내역</a></li>
-                        </ul>
-                    </div>
-                </form>
-                </div>
-
-                <form th:action="@{/members/logout}" method="post" sec:authorize="isAuthenticated()" >
-                    <button class="btn btn-outline-dark" type="submit">
-                        로그아웃
-                    </button>
-                </form>
-
-            </div>
-        </div>
-    </nav>
-
-    <!-- Header-->
-    <header class="bg-dark py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">쇼핑몰</h1>
-                <p class="lead fw-normal text-white-50 mb-0">쇼핑몰에 오신 것을 환영합니다.</p>
-            </div>
-        </div>
-    </header>
-
-
+<!DOCTYPE html>
+<html
+        layout:decorate="~{layouts/default}"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <!-- Add JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<div layout:fragment="content">
     <!-- Section-->
     <section class="py-5">
         <div class="container px-4 px-lg-5 mt-5">
             <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                <!-- 상품 목록이 채워질 곳 -->
+                <script>
+    $(document).ready(function() {
+        loadItems(0, 10);
 
-                <!-- 첫번째 아이템 -->
-                <div class="col mb-5" th:each="item : ${items}">
+        function loadItems(page, size) {
+            $.ajax({
+                url: "/all",
+                type: "GET",
+                data: {
+                    page: page,
+                    size: size
+                },
+                success: function(response) {
+                    displayItems(response.content);
+                },
+                error: function(xhr, status, error) {
+                    alert("상품 정보를 가져오는데 실패했습니다.");
+                }
+            });
+        }
+
+        function displayItems(items) {
+            let itemContainer = $(".row-cols-2");
+            itemContainer.empty();
+
+            items.forEach(function(item) {
+                let itemHtml = `
+                <div class="col mb-5">
                     <div class="card h-100">
-                        <!-- Product image-->
-                        <img class="card-img-top" th:src="@{${item.getImgPath()}}" alt="..." />
-                        <!-- Product details-->
+                        <img class="card-img-top" th:src="${item.imgUrl}" th:alt="${item.itemNm}" alt="..." />
                         <div class="card-body p-4">
                             <div class="text-center">
-                                <!-- Product name\-->
-                                <h5 class="fw-bolder" th:text="${item.getName()}">아이템이름</h5>
-                                <!-- Product price-->
-                                <p th:text="|${item.getPrice()} 원|">아이템 가격</p>
+                                <h5 class="fw-bolder">${item.itemNm}</h5>
+                                <p>${item.price} 원</p>
                             </div>
                         </div>
-                        <!-- Product actions-->
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                             <div class="text-center">
-                                <a class="btn btn-outline-dark mt-auto" sec:authorize="isAuthenticated()" th:href="@{/item/view/{id}(id=${item.getId()})}">상세보기</a>
-                                <a class="btn btn-outline-dark mt-auto" sec:authorize="!isAuthenticated()" th:href="@{/item/view/nonlogin/{id}(id=${item.getId()})}">상세보기</a>
+                                <a class="btn btn-outline-dark mt-auto" href="/item/view/${item.id}">상세보기</a>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>`;
 
+                itemContainer.append(itemHtml);
+            });
+        }
+    });
+</script>
             </div>
         </div>
     </section>
+</div>
 
-    <!-- Footer-->
-    <footer class="my-5 pt-5 text-muted text-center text-small">
-        <p class="mb-1">&copy;쇼핑몰 프로젝트</p>
-    </footer>
-    <!-- Bootstrap core JS-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/scripts.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch('/members/username', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'same-origin',
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Not logged in');
-                }
-            })
-            .then(user => {
-            // 로그인된 사용자에 대한 처리를 여기서 수행
-            const userForm = document.getElementById('user-form');
-             const dropdownButton = userForm.querySelector('#dropdownMenuButton');
-
-             // 사용자 이름을 표시하고 <form> 태그 내부의 코드를 활성화
-             dropdownButton.textContent = user.name +" "+ '사용자님';
-
-              // 각 링크의 href 속성을 업데이트
-             const myPageLink = userForm.querySelector('a:nth-child(1)');
-             const cartLink = userForm.querySelector('a:nth-child(2)');
-             const orderHistoryLink = userForm.querySelector('a:nth-child(3)');
-
-              myPageLink.href = `/user/${user.id}`;
-              cartLink.href = `/user/cart/${user.id}`;
-              orderHistoryLink.href = `/user/orderHist/${user.id}`;
-            })
-
-            .then(admin => {
-             // 로그인된 사용자에 대한 처리를 여기서 수행
-             const adminForm = document.getElementById('admin-form');
-             const dropdownButton = adminForm.querySelector('#dropdownMenuButton_admin');
-
-             // 사용자 이름을 표시하고 <form> 태그 내부의 코드를 활성화
-             dropdownMenuButton_admin.textContent = admin.name +" "+ '판매자님';
-
-             // 각 링크의 href 속성을 업데이트
-             const myPageLink = adminForm.querySelector('a:nth-child(1)');
-             const cartLink = adminForm.querySelector('a:nth-child(2)');
-             const orderHistoryLink = adminForm.querySelector('a:nth-child(3)');
-
-                myPageLink.href = `/admin/${admin.id}`;
-                cartLink.href = `/admin/cart/${admin.id}`;
-                 orderHistoryLink.href = `/admin/orderHist/${admin.id}`;
-            })
-
-            .catch(error => {
-                // 로그인되지 않은 사용자에 대한 처리를 여기서 수행
-
-            });
-        });
-    </script>
-    </body>
-    </html>
+</html>

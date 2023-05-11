@@ -1,17 +1,23 @@
 package com.example.weblogin.controller;
 
-import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.config.auth.PrincipalDetails;
+import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.domain.item.Item;
+import com.example.weblogin.domain.member.Member;
+import com.example.weblogin.domain.member.MemberRole;
 import com.example.weblogin.service.ItemService;
-import com.example.weblogin.service.SaleService;
 import com.example.weblogin.service.MemberService;
+import com.example.weblogin.service.SaleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityNotFoundException;
@@ -23,6 +29,7 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Controller
+@RequestMapping("/admin")
 public class AdminPageController {
 
     private final MemberService memberService;
@@ -31,35 +38,38 @@ public class AdminPageController {
 
 
     // 판매자 관리 페이지 접속
-    @GetMapping("/admin/{id}")
-    public String sellerPage(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        if (principalDetails.getMember().getId() == id) {
+    @GetMapping("/{id}")
+        public String sellerPage(@PathVariable("id") Long id, Model model, Authentication authentication) {
+        Long userId = memberService.getUserId(authentication);
+       if (Objects.equals(userId, id)) {
             // 로그인이 되어있는 판매자의 id와 판매자 페이지에 접속하는 id가 같아야 함
             model.addAttribute("admin", memberService.findUser(id));
 
-            return "/admin/sellerPage";
-        } else {
-            return "redirect:/main";
-        }
+            return "admin/sellerPage";
+       } else {
+           return "redirect:/main";
+       }
     }
 
 
     // 상품 등록 페이지
-    @GetMapping("/amdin/item/new")
-    public String itemSaveForm(@AuthenticationPrincipal PrincipalDetails principalDetails, Model model) {
-        if (principalDetails.getMember().getRole().equals("ROLE_SELLER")) {
-            // 판매자
-
-            model.addAttribute("itemFormDto", new ItemFormDto());
-            return "/seller/itemForm";
-        } else {
-            // 일반 회원이면 거절 -> main
-            return "redirect:/main";
+    @GetMapping("/newitem")
+    public String itemSaveForm(Authentication authentication, Model model) {
+        ResponseEntity<Member> memberResponse = memberService.getUser(authentication);
+        if (memberResponse.getStatusCode() == HttpStatus.OK) {
+            Member member = memberResponse.getBody();
+            if (member != null && member.getRole().equals(MemberRole.ADMIN)) {
+                // 판매자
+                model.addAttribute("itemFormDto", new ItemFormDto());
+                return "/admin/itemForm";
+            }
         }
+        // 일반 회원이거나 인증되지 않은 사용자이면 거절 -> main
+        return "redirect:/main";
     }
 
     //상품 수정 페이지
-    @GetMapping(value = "/admin/item/{itemId}")
+    @GetMapping(value = "/item/{itemId}")
     public String itemDetail(@PathVariable("itemId") Long itemId, Model model) {
 
         try {
@@ -97,7 +107,7 @@ public class AdminPageController {
         if (Objects.equals(principalDetails.getMember().getId(), id)) {
             List<Item> saleItemList = saleService.getItemsOnSale();
             mv.addObject("sellerSaleItems", saleItemList);
-            mv.setViewName("seller/itemManage");
+            mv.setViewName("admin/itemManage");
             return mv;
         }
         else {

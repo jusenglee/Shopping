@@ -1,0 +1,87 @@
+<!--resources/templates/fragments/header.html-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" th:href="@{/main}">쇼핑몰</a>
+            <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a aria-current="page" class="nav-link active" th:href="@{/main}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" sec:authorize="hasRole('ADMIN')" th:href="@{admin/newitem}">upload</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" sec:authorize="hasRole('ADMIN')" th:href="@{admin/{id}(id=${member.getId()})/manage}">Manage</a></li>
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" id="navbarDropdown" role="button">Shop</a>
+                        <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/item/list}">All Products</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                            <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <form sec:authorize="!isAuthenticated()" th:action="@{/members/signin}">
+                    <button class="btn btn-outline-dark" type="submit">
+                        로그인
+                    </button>
+                </form>
+                <form sec:authorize="!isAuthenticated()" th:action="@{/members/signup}">
+                    <button class="btn btn-outline-dark" type="submit">
+                        회원가입
+                    </button>
+                </form>
+
+                <div sec:authorize="hasRole('ROLE_USER')">
+                    <form id="user-form" >
+                        <div class="dropdown">
+                            <button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle btn-outline-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" type="button">
+                                회원님
+                            </button>
+                            <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">마이페이지</a></li>
+                                <li><a class="dropdown-item" href="#">장바구니</a></li>
+                                <li><a class="dropdown-item" href="#">주문내역</a></li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+
+                <div sec:authorize="hasRole('ROLE_ADMIN')">
+                    <form id="admin-form">
+                        <div class="dropdown">
+                            <button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle btn-outline-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" type="button">
+                                판매자님
+                            </button>
+                            <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu">
+                                <li><a class="dropdown-item"  href="#">판매자페이지</a></li>
+                                <li><a class="dropdown-item"   href="#">상품관리</a></li>
+                                <li><a class="dropdown-item" href="#">판매내역</a></li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+
+                <form method="post" sec:authorize="isAuthenticated()" th:action="@{/members/logout}" >
+                    <button class="btn btn-outline-dark" type="submit">
+                        로그아웃
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </nav>
+    <!-- Header-->
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">쇼핑몰</h1>
+                <p class="lead fw-normal text-white-50 mb-0">쇼핑몰에 오신 것을 환영합니다.</p>
+            </div>
+        </div>
+    </header>
+
+</div>
+</html>

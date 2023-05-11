@@ -6,11 +6,9 @@ import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.domain.DTO.ItemImgDto;
 import com.example.weblogin.domain.ItemImg.ItemImg;
 import com.example.weblogin.domain.ItemImg.ItemImgRepository;
-
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
-
-import com.example.weblogin.domain.member.Member;
+import com.example.weblogin.domain.item.ItemRepositoryCustom;
 import com.example.weblogin.domain.orderItem.OrderItem;
 import com.example.weblogin.domain.orderItem.OrderItemRepository;
 import com.example.weblogin.domain.saleitem.SaleItem;
@@ -41,13 +39,14 @@ public class ItemService {
     private final OrderItemRepository orderItemRepository;
 
     private final SaleItemRepository saleItemRepository;
-
+    private final KategorieService kategorieService;
+    private final ItemRepositoryCustom itemRepositoryCustom;
 
 
     // 상품 등록
     public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
         // 상품 등록
-        Item item = itemFormDto.toEntity(itemFormDto);
+        Item item = itemFormDto.toEntity(itemFormDto, kategorieService);
         itemRepository.save(item);
 
         //이미지 등록
@@ -118,25 +117,28 @@ public class ItemService {
 
     @Transactional
     //좋아요 추가 jh
-    public void heart1(Item item, Member Member) {
-        item.getHeart().add(Member);
-        this.itemRepository.save(item);
+    public void heart1(Long id) {
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid item Id:" + id));
+        item.increaseHeart();
+        itemRepository.save(item);
     }
 
     @Transactional
     //조회수 jh
-    public Item getItemView(Long id){
+    public Item getItemView(Long id) {
         Optional<Item> itemview = this.itemRepository.findById(id);
 
-        if(itemview.isPresent()){
+        if (itemview.isPresent()) {
             Item itemview1 = itemview.get();
             itemview1.setCountview(itemview1.getCountview() + 1);
             this.itemRepository.save(itemview1);
             return itemview1;
-        }else{
+        } else {
             throw new DataNotFoundException("question not found");
         }
     }
+
     @Transactional
     //전체 상품 페이지 정렬 - 상품 리스트 불러오기 (날짜순 정렬) jh
     public Page<Item> getListByCreateDate(int page) {
@@ -145,16 +147,15 @@ public class ItemService {
         Pageable pageable = PageRequest.of(page, 10); //조회할 페이지 수
         return this.itemRepository.findAll(pageable);
     }
-    @Transactional
-    //인기상품 페이지 정렬 - 조회수순으로 정렬 + 조회수가 같다면 최신순으로 정렬 jh
-    public Page<Item> getListLike(int page){
-        Sort sort1 = Sort.by("countview").descending();
-        Sort sort2 = Sort.by("createDate").descending();
-        Sort sortAll = sort1.and(sort2);
-
-        PageRequest pageable = PageRequest.of(page, 10, sortAll);
-
-        return this.itemRepository.findAll(pageable);
-    }
-
+//    @Transactional
+//    //인기상품 페이지 정렬 - 조회수순으로 정렬 + 조회수가 같다면 최신순으로 정렬 jh
+//    public Page<Item> getListLike(int page){
+//        Sort sort1 = Sort.by("countview").descending();
+//        Sort sort2 = Sort.by("createDate").descending();
+//        Sort sortAll = sort1.and(sort2);
+//
+//        PageRequest pageable = PageRequest.of(page, 10, sortAll);
+//
+//        return this.itemRepository.findAll(pageable);
+//    }
 }

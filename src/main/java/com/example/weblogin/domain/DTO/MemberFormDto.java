@@ -37,15 +37,16 @@ public class MemberFormDto {
         @NotEmpty(message = "전화번호는 필수 입력 값입니다. - 는 제외해주세요")
         private String phone;
 
+        private String role;
 
         @Builder
-        public MemberFormDto(String name, String email, String password, String address, String phone) {
+        public MemberFormDto(String name, String email, String password, String address, String phone, String role) {
             this.name = name;
             this.email = email;
             this.password = password;
             this.address = address;
             this.phone = phone;
-
+            this.role = role;
         }
 
 
@@ -56,6 +57,7 @@ public class MemberFormDto {
                 .password(entity.getPassword())
                 .address(entity.getAddress())
                 .phone(entity.getPhone())
+
                 .build();
 
         return dto;

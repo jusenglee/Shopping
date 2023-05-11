@@ -1,8 +1,6 @@
 package com.example.weblogin.controller;
 
 import com.example.weblogin.domain.DTO.ItemFormDto;
-import com.example.weblogin.domain.member.Member;
-import com.example.weblogin.domain.member.MemberRepository;
 import com.example.weblogin.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -15,11 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final MemberRepository memberRepository;
 
     // 메인 페이지 html 하나로 통일
     // 메인 페이지 (로그인 안 한 유저) /localhost:8080
-    @GetMapping("/main")
+    @GetMapping("main")
     public String mainPage(Model model, Authentication authentication) {
         //로그인 처리에 대해 확인
         return "mainPage";
@@ -36,10 +33,12 @@ public class ItemController {
             return "itemView";
     }
 
+    }
+
 //
 //    // 검색 상품 리스트 페이지
 //    @GetMapping("/item/list/")
 //    public String itemList() {
 //        return "itemList";
 //    }
-}
+

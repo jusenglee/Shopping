@@ -2,7 +2,9 @@ package com.example.weblogin.domain.DTO;
 
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemSellStatus;
+import com.example.weblogin.domain.itemCategory.Kategorie;
 import com.example.weblogin.domain.member.Member;
+import com.example.weblogin.service.KategorieService;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,9 @@ import java.util.List;
 public class ItemFormDto {
 
     private Long id;
+
+    @NotNull(message = "카테고리 필수 입력 값입니다.")
+    private Long category;
 
     @NotBlank(message = "상품명은 필수 입력 값입니다.")
     private String itemNm;
@@ -38,8 +43,13 @@ public class ItemFormDto {
 
     private List<Long> itemImgIds = new ArrayList<>();
 
+    private Integer countview;
+
+    private Integer heart;
+
     @Builder
-    public ItemFormDto(Long id,String itemNm, Integer price, String itemDetail, Integer stock, ItemSellStatus itemSellStatus, Member ADMIN ) {
+    public ItemFormDto(Long id,String itemNm, Integer price, String itemDetail, Integer stock, ItemSellStatus itemSellStatus, Member ADMIN,
+                       Long category ) {
         this.id = id;
         this.itemNm = itemNm;
         this.price = price;
@@ -47,15 +57,21 @@ public class ItemFormDto {
         this.stock = stock;
         this.itemSellStatus = itemSellStatus;
         this.ADMIN = ADMIN;
+        this.category = category;
     }
 
-    public Item toEntity(ItemFormDto dto) {
+    public Item toEntity(ItemFormDto dto, KategorieService kategorieService) {
+        Kategorie category = kategorieService.findKategorieById(dto.category);
+
         Item entity = Item.builder()
                 .itemNm(dto.itemNm)
                 .itemDetail(dto.itemDetail)
                 .itemSellStatus(dto.itemSellStatus)
                 .price(dto.price)
                 .stockNumber(dto.stock)
+                .category(category)
+                .countview(0)
+                .heart(0)
                 .build();
 
         return entity;

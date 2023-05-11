@@ -1,116 +1,135 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html layout:decorate="~{layouts/default}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>상품등록</title>
-    <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="../../../../../../../Downloads/startbootstrap-shop-item-gh-pages/assets/favicon.ico" />
-    <!-- Bootstrap icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <!-- Core theme CSS (includes Bootstrap)-->
-    <link href="/css/styles.css" rel="stylesheet" />
+    <title>Thymeleaf Example</title>
 </head>
 <body>
-<!-- Navigation-->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" th:href="@{/main}">쇼핑몰</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{/main}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" th:href="@{/item/new}">Upload</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" th:href="@{/seller/manage/{id}(id=${member.getId()})}">Manage</a></li>
-            </ul>
-            <form class="d-flex">
-                <a class="btn btn-outline-dark" href="#" th:text="|현재수익 : ${member.getCoin()} ₩|">
-                    현재잔액 : 10000 ₩
-                </a>
-                <a class="btn btn-outline-dark" th:href="@{/seller/{id}(id=${member.getId()})}" th:text="|${member.getName()}님 환영합니다.|">
-                    판매자 페이지
-                </a>
-                <a class="btn btn-outline-dark" th:href="@{/logout}">
-                    로그아웃
-                </a>
-            </form>
-        </div>
-    </div>
-</nav>
-<!-- Product section-->
-<section class="py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="row gx-4 gx-lg-5 align-items-center">
-    <!--<div class="col-md-7 col-lg-8 container">-->
-        <form th:action="@{/item/new/pro}" method="post" enctype="multipart/form-data">
-            <div class="row g-3">
-                <hr/>
-                <div class="col-12">
-                    <!--<label class="form-label">상품 상태</label>
-                    <select name="isSoldout">
-                        <option value="">선택</option>
-                        <option value="SELL">판매중</option>
-                        <option value="SOLDOUT">품절</option>
-                    </select>-->
-                    <label class="form-label" for="isSoldout">상품 상태</label><br/>
-                    <input type="radio" name="isSoldout" id="isSoldout" value="0">판매중<br/>
-                    <input type="radio" name="isSoldout" id="isSoldout" value="1">품절<br/>
-                    <div class="invalid-feedback">
-                        Input is empty.
-                    </div>
-                </div>
+<th:block layout:fragment="script">
 
-                <div class="col-12">
-                    <label for="name" class="form-label">상품 이름</label>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="상품 이름을 입력하세요.">
-                    <div class="invalid-feedback">
-                        Your name is required.
-                    </div>
-                </div>
+    <script th:inline="javascript">
+        $(document).ready(function(){
+            var errorMessage = [[${errorMessage}]];
+            if(errorMessage != null){
+                alert(errorMessage);
+            }
 
-                <div class="col-12">
-                    <label for="text" class="form-label">상품 설명</label>
-                    <input type="text" class="form-control" name="text" id="text" placeholder="상품 설명을 입력하세요.">
-                    <div class="invalid-feedback">
-                        Input is empty.
-                    </div>
-                </div>
+            bindDomEvent();
 
-                <div class="col-12">
-                    <label for="price" class="form-label">상품 가격</label>
-                    <input type="text" class="form-control" id="price" name="price" placeholder="상품 가격을 입력하세요.">
-                    <div class="invalid-feedback">
-                        Input is empty.
-                    </div>
-                </div>
+        });
 
-                <div class="col-12">
-                    <label for="stock" class="form-label">상품 재고</label>
-                    <input type="text" class="form-control" id="stock" name="stock"
-                           placeholder="상품 재고를 입력하세요.">
-                    <div class="invalid-feedback">
-                        Input is empty.
-                    </div>
-                </div>
+        function bindDomEvent(){
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();  //이미지 파일명
+                var fileExt = fileName.substring(fileName.lastIndexOf(".") + 1); // 확장자 추출
+                fileExt = fileExt.toLowerCase(); //소문자 변환
 
-                <div class="col-12">
-                    <label for="text" class="form-label">상품 이미지 업로드</label>
-                    <input type="file" class="form-control" id="imgFile" name="imgFile">
-                </div>
+                if (fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif" && fileExt != "png" && fileExt != "bmp") {
+                    alert("이미지 파일만 등록이 가능합니다.");
+                    return;
+                }
+
+                $(this).siblings(".custom-file-label").html(fileName);
+            });
+        }
+
+    </script>
+</th:block>
+
+<div layout:fragment="content">
+    <!-- Product section-->
+    <section class="py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="row gx-4 gx-lg-5 align-items-center">
+                <!--<div class="col-md-7 col-lg-8 container">-->
+                <form enctype="multipart/form-data" method="post" role="form" th:action="@{/admin/manage/item/new}"
+                      th:object="${itemFormDto}">
+                     <div class="row g-3">
+                        <hr/>
+                        <div class="col-12">
+                            <label class="form-label" th:field="*{itemSellStatus}">상품 상태</label><br/>
+                            <input id="SELL" name="itemSellStatus" type="radio" value="SELL">판매중<br/>
+                            <input id="SOLD_OUT" name="itemSellStatus" type="radio" value="SOLD_OUT">품절<br/>
+                            <div class="invalid-feedback">
+                                Input is empty.
+                            </div>
+                        </div>
+                         <div class="col-12">
+                             <label class="form-label" th:field="*{category}">카테고리 상태</label><br/>
+                             <input id="1" name="category" type="radio" value="1">바지<br/>
+                             <input id="2" name="category" type="radio" value="2">상의<br/>
+                             <div class="invalid-feedback">
+                                 Input is empty.
+                             </div>
+                         </div>
+                         <input th:field="*{id}" type="hidden">
+                        <div class="col-12">
+                            <label class="form-label">상품명</label>
+                            <input class="form-control" placeholder="상품명을 입력해주세요" th:field="*{itemNm}" type="text">
+
+                            <div class="invalid-feedback">
+                                Your name is required.
+                            </div>
+                            <p class="fieldError" th:errors="*{itemNm}" th:if="${#fields.hasErrors('itemNm')}">Incorrect data</p>
+
+                        </div>
+
+                        <div class="col-12">
+                            <label  class="form-label">상품 설명</label>
+                            <input class="form-control" id="itemDetail" name="itemDetail" placeholder="상품 설명을 입력하세요." th:field="*{itemDetail}" type="text">
+                            <div class="invalid-feedback">
+                                Input is empty.
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">상품 가격</label>
+                            <input class="form-control" id="price" name="price" placeholder="상품 가격을 입력하세요." th:field="*{price}" type="text">
+                            <div class="invalid-feedback">
+                                Input is empty.
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">상품 재고</label>
+                            <input class="form-control" id="stock" name="stock" placeholder="상품 재고를 입력하세요." th:field="*{stock}"
+                                   type="text">
+                            <div class="invalid-feedback">
+                                Input is empty.
+                            </div>
+                        </div>
+
+                         <div th:if="${#lists.isEmpty(itemImgDtoList)}">
+                             <div class="form-group" th:each="num: ${#numbers.sequence(1,5)}">
+                                 <div class="custom-file img-div">
+                                     <input class="custom-file-input" name="itemImgFile" type="file">
+                                     <label class="custom-file-label" th:text="상품이미지 + ${num}"></label>
+                                 </div>
+                             </div>
+                         </div>
+
+                         <div th:if = "${not #lists.isEmpty(itemImgDtoList)}">
+                             <div class="form-group" th:each="itemImgDto, status: ${itemImgDtoList}">
+                                 <div class="custom-file img-div">
+                                     <input class="custom-file-input" name="itemImgFile" type="file">
+                                     <input name="itemImgIds" th:value="${itemImgDto.id}" type="hidden">
+                                     <label class="custom-file-label" th:text="${not #strings.isEmpty(itemImgDto.oriImgName)} ? ${itemImgDto.oriImgName} : '상품이미지' + ${status.index+1}"></label>
+                                 </div>
+                             </div>
+                         </div>
+
+                    </div>
+                    <hr class="my-4">
+                    <div style="text-align: center" th:if="${#strings.isEmpty(id)}">
+                    <button class="w-100 btn btn-primary btn-lg mb-3" type="submit">상품 등록</button>
+                    </div>
+                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+
+                </form>
             </div>
-            <hr class="my-4">
-            <button class="w-100 btn btn-primary btn-lg mb-3" type="submit">상품 등록</button>
-        </form>
-    </div>
-    </div>
-</section>
-
-<footer class="my-5 pt-5 text-muted text-center text-small">
-    <p class="mb-1">&copy;쇼핑몰 프로젝트</p>
-</footer>
-
+        </div>
+    </section>
+</div>
 </body>
-
 </html>

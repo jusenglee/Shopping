@@ -15,9 +15,9 @@
         .bd-placeholder-img {
             font-size: 1.125rem;
             text-anchor: middle;
-            -webkit-member-select: none;
-            -moz-member-select: none;
-            member-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
         }
 
         @media (min-width: 768px) {
@@ -27,8 +27,7 @@
         }
     </style>
 </head>
-<body>
-<!-- Navigation-->
+<body> <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand" th:href="@{/main}">쇼핑몰</a>
@@ -36,42 +35,86 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                 <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{/main}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" th:href="@{/item/new}">Upload</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" th:href="@{/seller/manage/{id}(id=${member.getId()})}">Manage</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" th:href="@{admin/newitem}" sec:authorize="hasRole('ADMIN')">upload</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" th:href="@{admin/{id}(id=${member.getId()})/manage}" sec:authorize="hasRole('ADMIN')">Manage</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" th:href="@{/item/list}">All Products</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                        <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                    </ul>
+                </li>
             </ul>
-            <form class="d-flex">
-                <a class="btn btn-outline-dark" href="#" th:text="|현재수익 : ${member.getCoin()} ₩|">
-                    현재잔액 : 10000 ₩
-                </a>
-                <a class="btn btn-outline-dark" th:href="@{/seller/{id}(id=${member.getId()})}" th:text="|${member.getName()}님 환영합니다.|">
-                    판매자 페이지
-                </a>
-                <a class="btn btn-outline-dark" th:href="@{/logout}">
-                    로그아웃
-                </a>
+            <form th:action="@{/members/signin}" sec:authorize="!isAuthenticated()">
+                <button class="btn btn-outline-dark" type="submit">
+                    로그인
+                </button>
             </form>
+            <form th:action="@{/members/signup}" sec:authorize="!isAuthenticated()">
+                <button class="btn btn-outline-dark" type="submit">
+                    회원가입
+                </button>
+            </form>
+
+            <div sec:authorize="hasRole('ROLE_USER')">
+                <form id="user-form" >
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle btn-outline-dark" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            회원님
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#">마이페이지</a></li>
+                            <li><a class="dropdown-item" href="#">장바구니</a></li>
+                            <li><a class="dropdown-item" href="#">주문내역</a></li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div sec:authorize="hasRole('ROLE_ADMIN')">
+                <form id="admin-form">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle btn-outline-dark" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            판매자님
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item"  href="#">판매자페이지</a></li>
+                            <li><a class="dropdown-item"   href="#">상품관리</a></li>
+                            <li><a class="dropdown-item" href="#">판매내역</a></li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <form th:action="@{/members/logout}" method="post" sec:authorize="isAuthenticated()" >
+                <button class="btn btn-outline-dark" type="submit">
+                    로그아웃
+                </button>
+            </form>
+
         </div>
     </div>
 </nav>
-
 <!-- SIDE BAR -->
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="position-sticky pt-3">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" th:href="@{/seller/{id}(id=${member.getId()})}">
+                <a class="nav-link active" aria-current="page" th:href="@{/admin/{id}(id=${admin.getId()})}">
                     <span data-feather="home"></span>
                     판매자페이지
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" th:href="@{/seller/manage/{id}(id=${member.getId()})}">
+                <a class="nav-link active" aria-current="page" th:href="@{/admin/{id}(id=${admin.getId()})/manage}">
                     <span data-feather="home"></span>
                     상품관리
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/seller/salelist/{id}(id=${member.getId()})}">
+                <a class="nav-link" th:href="@{/admin/salelist/{id}(id=${admin.getId()})}">
                     <span data-feather="file"></span>
                     판매내역
                 </a>
@@ -95,8 +138,8 @@
                         <div class="d-flex flex-column align-items-center text-center">
                             <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
                             <div class="mt-3">
-                                <h4 th:text="${member.getUsername()}">John Doe</h4>
-                                <a type="button" class="btn btn-primary" th:href="@{/member/modify/{id}(id=${member.id})}">정보수정</a>
+                                <h4 th:text="${admin.getName()}">John Doe</h4>
+                                <a type="button" class="btn btn-primary" th:href="@{/user/modify/{id}(id=${admin.id})}">정보수정</a>
                             </div>
                         </div>
                     </div>
@@ -109,7 +152,7 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">판매자이름</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary" th:text="${member.getName()}">
+                            <div class="col-sm-9 text-secondary" th:text="${admin.getName()}">
                                 판매자이름
                             </div>
                         </div>
@@ -118,7 +161,7 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">닉네임</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary" th:text="${member.getUsername()}">
+                            <div class="col-sm-9 text-secondary">
                                 판매자 닉네임
                             </div>
                         </div>
@@ -127,7 +170,7 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">이메일</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary" th:text="${member.getEmail()}">
+                            <div class="col-sm-9 text-secondary" th:text="${admin.getEmail()}">
                                 fip@jukmuh.al
                             </div>
                         </div>
@@ -136,7 +179,7 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">전화번호</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary" th:text="${member.getPhone()}">
+                            <div class="col-sm-9 text-secondary" th:text="${admin.getPhone()}">
                                 (239) 816-9029
                             </div>
                         </div>
@@ -145,7 +188,7 @@
                             <div class="col-sm-3">
                                 <h6 class="mb-0">사업장 주소</h6>
                             </div>
-                            <div class="col-sm-9 text-secondary" th:text="${member.getAddress()}">
+                            <div class="col-sm-9 text-secondary" th:text="${admin.getAddress()}">
                                 Bay Area, San Francisco, CA
                             </div>
                         </div>
@@ -159,7 +202,7 @@
     </div>
 </div>
 <footer class="my-5 pt-5 text-muted text-center text-small">
-    <p class="mb-1">&copy;쇼핑몰 프로젝트</p>
+    <p class="mb-1">&copy; 김연지 - 2022년 01월 쇼핑몰 프로젝트</p>
 </footer>
 </body>
 </html>
