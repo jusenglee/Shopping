@@ -4,8 +4,6 @@ import com.example.weblogin.config.BaseEntity;
 import com.example.weblogin.domain.DTO.MemberFormDto;
 import com.example.weblogin.domain.cart.Cart;
 import com.example.weblogin.domain.order.Order;
-import com.nimbusds.openid.connect.sdk.claims.Address;
-import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

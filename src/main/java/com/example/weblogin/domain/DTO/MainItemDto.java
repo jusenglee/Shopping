@@ -1,8 +1,6 @@
 package com.example.weblogin.domain.DTO;
 
-import com.example.weblogin.domain.item.Item;
-import com.example.weblogin.domain.itemCategory.Brand;
-import com.example.weblogin.domain.itemCategory.Kategorie;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,19 +18,24 @@ public class MainItemDto {
 
     private Integer price;
 
+    private String category_name;
+
+    private String brand_name;
+
+    private Integer countView;
+
     private Integer heart;
 
-    private Integer countview;
-
-    private Brand brand;
-
-    private KategorieDto category;
-
-    public MainItemDto(Item item, Kategorie kategorie) {
-        this.id = item.getId();
-        this.itemNm = item.getItemNm();
-        this.price = item.getPrice();
-        this.itemDetail = item.getItemDetail();
-        this.category = new KategorieDto(kategorie);
+    @QueryProjection
+    public MainItemDto(Long id, String itemNm, String itemDetail, String imgUrl, Integer price, String brand_name, String category_name, Integer countView, Integer heart) {
+        this.id = id;
+        this.itemNm = itemNm;
+        this.itemDetail = itemDetail;
+        this.imgUrl = imgUrl;
+        this.price = price;
+        this.brand_name = brand_name;
+        this.category_name = category_name;
+        this.countView = countView;
+        this.heart = heart;
     }
 }

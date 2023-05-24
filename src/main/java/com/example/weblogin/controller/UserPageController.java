@@ -3,19 +3,15 @@ package com.example.weblogin.controller;
 
 import com.example.weblogin.config.auth.PrincipalDetails;
 import com.example.weblogin.domain.DTO.MemberFormDto;
-
-import com.example.weblogin.service.*;
+import com.example.weblogin.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
 import javax.persistence.EntityNotFoundException;
-
 import java.util.Objects;
 
 // 구매자에 해당하는 페이지 관리
@@ -32,14 +28,14 @@ public class UserPageController {
     @GetMapping("/user/{id}")
     public String userPage(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
         // 로그인이 되어있는 유저의 id와 유저 페이지에 접속하는 id가 같아야 함
-//        if (Objects.equals(principalDetails.getMember().getId(), id)) {
+        if (Objects.equals(principalDetails.getMember().getId(), id)) {
 
             model.addAttribute("user", memberService.findUser(id));
 
             return "/user/userPage";
-//        } else {
-//            return "redirect:/main";
-//        }
+        } else {
+            return "redirect:/main";
+        }
     }
 
     // 회원 정보 수정페이지 접속
@@ -49,8 +45,8 @@ public class UserPageController {
         if (Objects.equals(principalDetails.getMember().getId(), id)) {
 
             try {
-                MemberFormDto MemberFormDto = memberService.getMemberDetail(id);
-                model.addAttribute("itemFormDto", MemberFormDto);
+                MemberFormDto memberFormDto = memberService.getMemberDetail(id);
+                model.addAttribute("itemFormDto", memberFormDto);
             } catch (EntityNotFoundException e) {
                 model.addAttribute("errorMessage", "회원 정보를 찾을 수 없습니다.");
 

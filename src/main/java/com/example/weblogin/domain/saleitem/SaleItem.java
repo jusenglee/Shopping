@@ -3,10 +3,10 @@ package com.example.weblogin.domain.saleitem;
 
 import com.example.weblogin.config.BaseEntity;
 import com.example.weblogin.domain.item.Item;
-
 import com.example.weblogin.domain.sale.Sale;
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import javax.persistence.*;
 
@@ -26,31 +26,10 @@ public class SaleItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
-
-
-    public void setItem(Item item) {
-        this.item = item;
-    }
-
-    public void setSale(Sale sale) {
-        this.sale = sale;
-    }
-
-    public void setSalePrice(Integer salePrice) {
-        this.salePrice = salePrice;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale_id")
     private Sale sale;
-
-
     private Integer salePrice;
-
     private Integer count;
 
     public SaleItem() {
@@ -72,6 +51,23 @@ public class SaleItem extends BaseEntity {
         saleItem.setCount(count);
         return saleItem;
     }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public void setSale(Sale sale) {
+        this.sale = sale;
+    }
+
+    public void setSalePrice(Integer salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
     //수익
     public Integer getProfit() {
         return getSalePrice() - getItem().getPrice();

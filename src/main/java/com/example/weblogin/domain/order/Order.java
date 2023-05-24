@@ -1,12 +1,13 @@
 package com.example.weblogin.domain.order;
 
 import com.example.weblogin.config.BaseEntity;
-import com.example.weblogin.domain.cartItem.CartItem;
 import com.example.weblogin.domain.delivery.Delivery;
 import com.example.weblogin.domain.delivery.DeliveryStatus;
 import com.example.weblogin.domain.member.Member;
 import com.example.weblogin.domain.orderItem.OrderItem;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

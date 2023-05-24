@@ -2,7 +2,8 @@ package com.example.weblogin.domain.sale;
 
 import com.example.weblogin.config.BaseEntity;
 import com.example.weblogin.domain.saleitem.SaleItem;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -43,7 +43,7 @@
                 let itemHtml = `
                 <div class="col mb-5">
                     <div class="card h-100">
-                        <img class="card-img-top" th:src="${item.imgUrl}" th:alt="${item.itemNm}" alt="..." />
+                        <img class="card-img-top"  src="${window.location.origin + item.imgUrl}" th:alt="${item.itemNm}" alt="..." />
                         <div class="card-body p-4">
                             <div class="text-center">
                                 <h5 class="fw-bolder">${item.itemNm}</h5>
@@ -62,6 +62,7 @@
             });
         }
     });
+
 </script>
             </div>
         </div>

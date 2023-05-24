@@ -2,7 +2,6 @@ package com.example.weblogin.service;
 
 import com.example.weblogin.config.Exception.ServiceUtils;
 import com.example.weblogin.domain.DTO.CartDto;
-import com.example.weblogin.domain.DTO.CartItemDto;
 import com.example.weblogin.domain.cart.Cart;
 import com.example.weblogin.domain.cart.CartRepository;
 import com.example.weblogin.domain.cartItem.CartItem;
@@ -20,13 +19,11 @@ import com.example.weblogin.domain.sale.Sale;
 import com.example.weblogin.domain.sale.SaleRepository;
 import com.example.weblogin.domain.saleitem.SaleItem;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -99,11 +96,6 @@ public class CartService {
     public CartDto getCart(Long memberId) {
         Member member = ServiceUtils.getOrThrow(memberRepository.findById(memberId), "존재하지 않는 회원입니다.");
         Cart cart = ServiceUtils.getOrThrow(cartRepository.findByMember(member), "장바구니가 존재하지 않습니다.");
-
-        List<CartItemDto> cartItemDtoList = cart.getCartItems().stream()
-                .map(CartItemDto::new)
-                .collect(Collectors.toList());
-
         return new CartDto(cart);
     }
 

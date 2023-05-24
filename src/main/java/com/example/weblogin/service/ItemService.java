@@ -8,7 +8,8 @@ import com.example.weblogin.domain.ItemImg.ItemImg;
 import com.example.weblogin.domain.ItemImg.ItemImgRepository;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
-import com.example.weblogin.domain.item.ItemRepositoryCustom;
+import com.example.weblogin.domain.itemCategory.Brand;
+import com.example.weblogin.domain.itemCategory.Kategorie;
 import com.example.weblogin.domain.orderItem.OrderItem;
 import com.example.weblogin.domain.orderItem.OrderItemRepository;
 import com.example.weblogin.domain.saleitem.SaleItem;
@@ -39,14 +40,15 @@ public class ItemService {
     private final OrderItemRepository orderItemRepository;
 
     private final SaleItemRepository saleItemRepository;
-    private final KategorieService kategorieService;
-    private final ItemRepositoryCustom itemRepositoryCustom;
+    private final Kategori_Brnad_Service kategorieService;
 
 
     // 상품 등록
     public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
         // 상품 등록
-        Item item = itemFormDto.toEntity(itemFormDto, kategorieService);
+        Kategorie category = kategorieService.findKategorieById(itemFormDto.getCategory());
+        Brand brand = kategorieService.findBrandById(itemFormDto.getBrand());
+        Item item = itemFormDto.toEntity(brand, category);
         itemRepository.save(item);
 
         //이미지 등록
@@ -147,15 +149,4 @@ public class ItemService {
         Pageable pageable = PageRequest.of(page, 10); //조회할 페이지 수
         return this.itemRepository.findAll(pageable);
     }
-//    @Transactional
-//    //인기상품 페이지 정렬 - 조회수순으로 정렬 + 조회수가 같다면 최신순으로 정렬 jh
-//    public Page<Item> getListLike(int page){
-//        Sort sort1 = Sort.by("countview").descending();
-//        Sort sort2 = Sort.by("createDate").descending();
-//        Sort sortAll = sort1.and(sort2);
-//
-//        PageRequest pageable = PageRequest.of(page, 10, sortAll);
-//
-//        return this.itemRepository.findAll(pageable);
-//    }
 }

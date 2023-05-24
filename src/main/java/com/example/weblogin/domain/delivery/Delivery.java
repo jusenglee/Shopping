@@ -2,8 +2,6 @@ package com.example.weblogin.domain.delivery;
 
 
 import com.example.weblogin.domain.order.Order;
-import com.example.weblogin.config.BaseEntity;
-import com.nimbusds.openid.connect.sdk.claims.Address;
 import lombok.Data;
 
 import javax.persistence.*;

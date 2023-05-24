@@ -1,6 +1,5 @@
 package com.example.weblogin.domain.item;
 
-import com.example.weblogin.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

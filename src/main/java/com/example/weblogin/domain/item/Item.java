@@ -2,24 +2,26 @@ package com.example.weblogin.domain.item;
 
 import com.example.weblogin.config.BaseEntity;
 import com.example.weblogin.domain.DTO.ItemFormDto;
+import com.example.weblogin.domain.ItemImg.ItemImg;
 import com.example.weblogin.domain.itemCategory.Brand;
-
 import com.example.weblogin.domain.itemCategory.Kategorie;
-import com.example.weblogin.domain.member.Member;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity(name = "Item")
-@Getter
 @Setter
 @NoArgsConstructor
+@Getter
 public class Item extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "item_id")
     private Long id; //상품 코드
 
@@ -41,24 +43,28 @@ public class Item extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
-    private Kategorie category;
+    private Kategorie category; // 카테고리 번호
 
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate; // 생성 날짜
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Brand brand;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;    //브랜드 번호
 
     @Column(columnDefinition = "integer default 0", nullable = false)//조회수 jh
     //본래 @ManyToMany 다대다 관계의 경우 그대로 사용하지 못하고 반드시 정규화를 통해 중간 테이블을 만들어줘야 합니다. dltmdwn00
-    private Integer heart;
+    private Integer heart; // 조회수
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private Integer countview; //조회수 jh
 
+    @OneToMany(mappedBy = "item")
+    private List<ItemImg> itemImgs; // 상품 이미지
+
     @Builder
     public Item(String itemNm, Integer price, Integer stockNumber,
                 String itemDetail, ItemSellStatus itemSellStatus,
-                LocalDateTime createdDate, Integer countview, Integer heart, Kategorie category) {
+                LocalDateTime createdDate, Integer countview, Integer heart, Kategorie category,Brand brand) {
         this.itemNm = itemNm;
         this.price = price;
         this.stockNumber =stockNumber;
@@ -68,6 +74,7 @@ public class Item extends BaseEntity {
         this.countview = countview;
         this.heart = heart;
         this.category = category;
+        this.brand = brand;
     }
 
     public void updateItem(ItemFormDto itemFormDto) {

@@ -1,9 +1,11 @@
 package com.example.weblogin.domain.itemCategory;
 
-import com.example.weblogin.config.BaseEntity;
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Builder
 @AllArgsConstructor
@@ -20,15 +22,5 @@ public class Kategorie {
     private String kateName;
 
     private String kateCodeRef;
-
-    Kategorie(String name) {
-        this.kateName = name;
-    }
-
-    public String getName() {
-        return kateName;
-    }
-
-
 
 }

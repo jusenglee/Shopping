@@ -1,19 +1,11 @@
 package com.example.weblogin.controller.RestController;
 
 
-import com.example.weblogin.domain.DTO.ItemFormDto;
-import com.example.weblogin.config.auth.PrincipalDetails;
 import com.example.weblogin.domain.DTO.MemberFormDto;
-
 import com.example.weblogin.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor

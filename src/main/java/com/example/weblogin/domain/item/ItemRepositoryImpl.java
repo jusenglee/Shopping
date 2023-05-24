@@ -3,6 +3,9 @@ package com.example.weblogin.domain.item;
 
 import com.example.weblogin.domain.DTO.ItemSearchRequestDTO;
 import com.example.weblogin.domain.DTO.MainItemDto;
+import com.example.weblogin.domain.DTO.QMainItemDto;
+import com.example.weblogin.domain.ItemImg.QItemImg;
+import com.example.weblogin.domain.itemCategory.QBrand;
 import com.example.weblogin.domain.itemCategory.QKategorie;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -28,7 +31,9 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     @Override
     public Page<MainItemDto> search(ItemSearchRequestDTO request) {
         QItem item = QItem.item;
-        QKategorie kategorie = new QKategorie("kategorie");
+        QKategorie categorie = QKategorie.kategorie;
+        QItemImg itemImg = QItemImg.itemImg;
+        QBrand brand = QBrand.brand;
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -41,7 +46,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         }
         if (request.getCategoryIds() != null && !request.getCategoryIds().isEmpty()) {
             List<Long> categoryIds = request.getCategoryIds() != null ? request.getCategoryIds() : Collections.emptyList();
-            BooleanExpression categoryCondition = kategorie.id.in(categoryIds.toArray(new Long[0]));
+            BooleanExpression categoryCondition = categorie.id.in(categoryIds.toArray(new Long[0]));
             builder.and(categoryCondition);
         }
 
@@ -63,18 +68,29 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         }
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-
         JPAQuery<MainItemDto> query = new JPAQuery<>(entityManager);
-        query.select(item)
+        query.select(new QMainItemDto(
+                        item.id,
+                        item.itemNm,
+                        item.itemDetail,
+                        itemImg.imgUrl,
+                        item.price,
+                        brand.name,
+                        categorie.kateName,
+                        item.countview,
+                       item.heart
+              ))
                 .from(item)
-                .join(item.category, kategorie)
-                .where(builder)
+                .join(item.category, categorie)
+               .join(item.brand, brand)
+                .join(item.itemImgs, itemImg) // fetchJoin() is used here
+                .where(builder,itemImg.repimgYn.eq("Y") )
                 .orderBy(orders.toArray(new OrderSpecifier[0]))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
-        List<MainItemDto> mainItemDto = query.fetch();
-        long totalCount = query.fetchCount();
-        return new PageImpl<>(mainItemDto, pageable, totalCount);
+       List<MainItemDto> mainItemDto = query.fetch();
+      long totalCount = query.fetchCount();
+      return new PageImpl<>(mainItemDto, pageable, totalCount);
     }
 }

@@ -134,7 +134,7 @@ public class OrderService {
             orderHistoryDtos.add(orderHistoryDto);
         }
 
-        return new PageImpl<OrderHistoryDto>(orderHistoryDtos, pageable, totalCount);
+        return new PageImpl<>(orderHistoryDtos, pageable, totalCount);
     }
 
     //주문 취소하기

@@ -1,7 +1,6 @@
 package com.example.weblogin.service;
 
 import com.example.weblogin.domain.DTO.SaleInfo;
-
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
 import com.example.weblogin.domain.item.ItemSellStatus;
@@ -25,18 +24,15 @@ public class SaleService {
 
     private final SaleItemRepository saleItemRepository;
 
-
-
-
+    private static final IllegalStateException IllegalStateException =  new IllegalStateException("존재하지 않는 상품입니다.");
     /**
      * 판매내역 전체 조회
      */
     public List<SaleInfo> getSaleInfoList() {
         List<Sale> sales = saleRepository.findAllByOrderByIdDesc();
-        List<SaleInfo> saleInfoList = sales.stream()
+        return sales.stream()
                 .map(sale -> new SaleInfo(sale.getSaleDate(), sale.getTotalProfit()))
                 .collect(Collectors.toList());
-        return saleInfoList;
     }
 
     /**

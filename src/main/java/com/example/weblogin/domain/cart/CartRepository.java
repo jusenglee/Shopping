@@ -1,6 +1,5 @@
 package com.example.weblogin.domain.cart;
 
-import com.example.weblogin.domain.cartItem.CartItem;
 import com.example.weblogin.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

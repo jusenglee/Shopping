@@ -22,6 +22,12 @@
                             <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
                         </ul>
                     </li>
+
+                    <form class="d-md-inline-flex">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+
                 </ul>
                 <form sec:authorize="!isAuthenticated()" th:action="@{/members/signin}">
                     <button class="btn btn-outline-dark" type="submit">
@@ -33,6 +39,7 @@
                         회원가입
                     </button>
                 </form>
+
 
                 <div sec:authorize="hasRole('ROLE_USER')">
                     <form id="user-form" >

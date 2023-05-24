@@ -29,10 +29,11 @@ public class ItemImgService {
         String imgUrl = "";
 
         //파일 업로드
-        if (!StringUtils.isEmpty(oriImgName)) {
+        if (StringUtils.hasText(oriImgName)) {
             imgName = fileService.uploadFile(itemImgLocation, oriImgName, itemImgFile.getBytes());
-            imgUrl = "/images/item/" + imgName;
+            imgUrl = "/images/" + imgName;
         }
+
 
         //상품 이미지 정보 저장
         itemImg.updateItemImg(oriImgName, imgName, imgUrl);
@@ -47,13 +48,14 @@ public class ItemImgService {
             ItemImg savedItemImg = itemImgRepository.findById(itemImgId).orElseThrow(EntityNotFoundException::new);
 
             //기존 이미지 삭제
-            if (!StringUtils.isEmpty(savedItemImg.getImgName())) {
+            if (!StringUtils.hasText(savedItemImg.getImgName())) {
+
                 fileService.deleteFile(itemImgLocation + "/" + savedItemImg.getImgName());
             }
 
             String oriImgName = itemImgFile.getOriginalFilename();
             String imgName = fileService.uploadFile(itemImgLocation, oriImgName, itemImgFile.getBytes());
-            String imgUrl = "/images/item/" + imgName;
+            String imgUrl = "/images/" + imgName;
             savedItemImg.updateItemImg(oriImgName, imgName, imgUrl);
         }
     }

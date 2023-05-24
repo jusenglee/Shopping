@@ -2,10 +2,8 @@ package com.example.weblogin.domain.DTO;
 
 
 import com.example.weblogin.domain.member.Member;
-import com.nimbusds.openid.connect.sdk.claims.Address;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
