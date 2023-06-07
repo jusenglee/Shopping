@@ -4,14 +4,12 @@ package com.example.weblogin.controller.RestController;
 import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.domain.DTO.ItemSearchRequestDTO;
 import com.example.weblogin.domain.DTO.MainItemDto;
-import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepositoryCustom;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.BrandRepository;
-import com.example.weblogin.domain.itemCategory.Kategorie;
 import com.example.weblogin.domain.itemCategory.CategorieRepository;
+import com.example.weblogin.domain.itemCategory.Kategorie;
 import com.example.weblogin.domain.member.Member;
-import com.example.weblogin.domain.member.MemberRole;
 import com.example.weblogin.service.ItemService;
 import com.example.weblogin.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +17,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.ui.Model;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,7 +52,7 @@ public class RestItemController {
                         );
                 return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
                 }else {
-                    itemFormDto.setADMIN(member);
+                    itemFormDto.setAdmin(member);
                     itemService.saveItem(itemFormDto, itemImgFileList);
                     return new ResponseEntity<>("상품 등록 완료", HttpStatus.OK);
                 }
@@ -117,10 +116,16 @@ public class RestItemController {
 
     //상품 상세보기
     @GetMapping("item/{itemId}")
-    public ResponseEntity<?> itemDetail(@PathVariable("itemId") Long itemId) {
+    public ResponseEntity<?> itemDetail(@PathVariable("itemId") Long itemId, @AuthenticationPrincipal Authentication authentication) {
         try {
+            Map<String, Object> response = new HashMap<>();
             ItemFormDto itemFormDto = itemService.getItemDetail(itemId);
-            return new ResponseEntity<>(itemFormDto, HttpStatus.OK);
+            if(authentication != null){
+                Member member = memberService.getAuthenticatedMember(authentication);
+                response.put("member", member);
+            }
+            response.put("itemFormDto", itemFormDto);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("상품을 찾을 수 없습니다.");
         }

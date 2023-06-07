@@ -5,7 +5,6 @@ import com.example.weblogin.domain.item.ItemSellStatus;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.Kategorie;
 import com.example.weblogin.domain.member.Member;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -38,7 +37,7 @@ public class ItemFormDto {
     @NotNull(message = "재고는 필수 입력 값입니다.")
     private Integer stock;
 
-    private Member ADMIN;//브랜드 계정
+    private Member admin;//브랜드 계정
 
     @NotNull(message = "상품 상태는 필수 입력 값입니다.")
     private ItemSellStatus itemSellStatus;
@@ -61,45 +60,34 @@ public class ItemFormDto {
         return heart;
     }
 
-    @Builder
-    public ItemFormDto(Long id, Long category, Long brand, String itemNm, Integer price, String itemDetail, Integer stock, Member ADMIN, ItemSellStatus itemSellStatus, List<ItemImgDto> itemImgDtoList, List<Long> itemImgIds, Integer countview, Integer heart) {
-        this.id = id;
-        this.category = category;
-        this.brand = brand;
-        this.itemNm = itemNm;
-        this.price = price;
-        this.itemDetail = itemDetail;
-        this.stock = stock;
-        this.ADMIN = ADMIN;
-        this.itemSellStatus = itemSellStatus;
-        this.itemImgDtoList = itemImgDtoList;
-        this.itemImgIds = itemImgIds;
-        this.countview = countview;
-        this.heart = heart;
+    public static ItemFormDto of(Item entity) {
+        ItemFormDto itemFormDto = new ItemFormDto();
+        itemFormDto.setId(entity.getId());
+        itemFormDto.setCategory(entity.getCategory().getId());
+        itemFormDto.setBrand(entity.getBrand().getId());
+        itemFormDto.setAdmin(entity.getAdmin());
+        itemFormDto.setItemNm(entity.getItemNm());
+        itemFormDto.setItemDetail(entity.getItemDetail());
+        itemFormDto.setItemSellStatus(entity.getItemSellStatus());
+        itemFormDto.setPrice(entity.getPrice());
+        itemFormDto.setStock(entity.getStockNumber());
+        itemFormDto.setCountview(entity.getCountview());
+        itemFormDto.setHeart(entity.getHeart());
+        return itemFormDto;
     }
 
     public Item toEntity(Brand brand, Kategorie category) {
-        return Item.builder()
-                .itemNm(itemNm)
-                .itemDetail(itemDetail)
-                .itemSellStatus(itemSellStatus)
-                .price(price)
-                .stockNumber(stock)
-                .category(category)
-                .brand(brand)
-                .countview(0)
-                .heart(0)
-                .build();
-    }
-
-    public static ItemFormDto of(Item entity) {
-
-        return ItemFormDto.builder()
-                .itemNm(entity.getItemNm())
-                .itemDetail(entity.getItemDetail())
-                .itemSellStatus(entity.getItemSellStatus())
-                .price(entity.getPrice())
-                .stock(entity.getStockNumber())
-                .build();
+        Item item = new Item();
+        item.setItemNm(itemNm);
+        item.setItemDetail(itemDetail);
+        item.setItemSellStatus(itemSellStatus);
+        item.setPrice(price);
+        item.setStockNumber(stock);
+        item.setCategory(category);
+        item.setBrand(brand);
+        item.setCountview(0);
+        item.setHeart(0);
+        item.setAdmin(admin);
+        return item;
     }
 }

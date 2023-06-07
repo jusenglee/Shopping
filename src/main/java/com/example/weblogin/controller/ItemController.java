@@ -1,6 +1,6 @@
 package com.example.weblogin.controller;
 
-import com.example.weblogin.domain.DTO.ItemFormDto;
+
 import com.example.weblogin.domain.itemCategory.BrandRepository;
 import com.example.weblogin.service.ItemService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ItemController {
     // 상품 상세 페이지
     @GetMapping("/item/view/{itemId}")
     public String itemView(@PathVariable("itemId") Long itemId) {
-            return "itemView";
+            return "itemView2";
     }
     }
 

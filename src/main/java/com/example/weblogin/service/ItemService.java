@@ -27,7 +27,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Service
@@ -64,22 +64,23 @@ public class ItemService {
         return item.getId();
     }
 
-    //상품 정보 불러오기(수정용)
     @Transactional(readOnly = true)
     public ItemFormDto getItemDetail(Long itemId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
 
         List<ItemImg> itemImgList = itemImgRepository.findByItemIdOrderByIdAsc(itemId);
-        List<ItemImgDto> itemImgDtoList = itemImgList.stream()
-                .map(ItemImgDto::of)
-                .collect(Collectors.toList());
+        List<ItemImgDto> itemImgDtoList = new ArrayList<>();
 
+        for (ItemImg itemImg : itemImgList) {
+            ItemImgDto itemImgDto = ItemImgDto.of(itemImg);
+            itemImgDtoList.add(itemImgDto);
+        }
+
+        Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
         ItemFormDto itemFormDto = ItemFormDto.of(item);
         itemFormDto.setItemImgDtoList(itemImgDtoList);
 
         return itemFormDto;
     }
-
 
     // 상품 수정
     @Transactional

@@ -5,7 +5,7 @@ import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.domain.ItemImg.ItemImg;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.Kategorie;
-import lombok.Builder;
+import com.example.weblogin.domain.member.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -61,21 +61,10 @@ public class Item extends BaseEntity {
     @OneToMany(mappedBy = "item")
     private List<ItemImg> itemImgs; // 상품 이미지
 
-    @Builder
-    public Item(String itemNm, Integer price, Integer stockNumber,
-                String itemDetail, ItemSellStatus itemSellStatus,
-                LocalDateTime createdDate, Integer countview, Integer heart, Kategorie category,Brand brand) {
-        this.itemNm = itemNm;
-        this.price = price;
-        this.stockNumber =stockNumber;
-        this.itemDetail = itemDetail;
-        this.itemSellStatus = itemSellStatus;
-        this.createdDate = createdDate;
-        this.countview = countview;
-        this.heart = heart;
-        this.category = category;
-        this.brand = brand;
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "member_id")
+    private Member admin;    //상품 게시자
+
 
     public void updateItem(ItemFormDto itemFormDto) {
         this.itemNm = itemFormDto.getItemNm();
@@ -109,7 +98,7 @@ public class Item extends BaseEntity {
         if (this.itemSellStatus == ItemSellStatus.STOPPED) {
             throw new IllegalStateException("이미 판매가 중지된 상품입니다.");
         }
-        this.itemSellStatus = itemSellStatus.STOPPED;
+        this.itemSellStatus = ItemSellStatus.STOPPED;
     }
 
     /**
