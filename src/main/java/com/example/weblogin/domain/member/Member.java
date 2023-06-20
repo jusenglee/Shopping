@@ -4,6 +4,7 @@ import com.example.weblogin.config.BaseEntity;
 import com.example.weblogin.domain.DTO.MemberFormDto;
 import com.example.weblogin.domain.cart.Cart;
 import com.example.weblogin.domain.order.Order;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "User")
 @Entity
 @Getter
+@JsonIgnoreProperties
 public class Member extends BaseEntity {
 
     @Id
