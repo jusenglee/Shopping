@@ -5,7 +5,9 @@ import com.example.weblogin.config.auth.PrincipalDetails;
 import com.example.weblogin.domain.DTO.MemberFormDto;
 import com.example.weblogin.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,10 +102,11 @@ public class UserPageController {
 
     // 상품 개별 주문 -> 상품 상세페이지에서 구매하기 버튼으로 주문
 
-    @GetMapping("/user/{id}/checkout/{itemId}")
-    public String checkout(@PathVariable("id") Long id, @PathVariable("itemId") Integer itemId, @AuthenticationPrincipal PrincipalDetails principalDetails, int count) {
+    @GetMapping("/user/checkout/{itemId}")
+    public String checkout(@PathVariable("itemId") Integer itemId) {
         // 로그인이 되어있는 유저의 id와 주문하는 id가 같아야 함
-        if (Objects.equals(principalDetails.getMember().getId(), id)) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
 
             return "redirect:/user/orderHist/{id}";
         } else {
