@@ -4,7 +4,6 @@ import com.example.weblogin.config.auth.PrincipalDetails;
 import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.itemCategory.BrandRepository;
-import com.example.weblogin.domain.itemCategory.CategorieRepository;
 import com.example.weblogin.domain.member.Member;
 import com.example.weblogin.domain.member.MemberRole;
 import com.example.weblogin.service.ItemService;
@@ -13,6 +12,7 @@ import com.example.weblogin.service.SaleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Objects;
 
 // 판매자에 해당하는 페이지 관리
 // 판매자페이지, 상품관리, 판매내역
@@ -35,22 +34,20 @@ public class AdminPageController {
     private final MemberService memberService;
     private final ItemService itemService;
     private final SaleService saleService;
-    private final CategorieRepository categorieRepository;
     private final BrandRepository brandRepository;
 
 
     // 판매자 관리 페이지 접속
-    @GetMapping("/{id}")
-        public String sellerPage(@PathVariable("id") Long id, Model model, Authentication authentication) {
-        Long userId = memberService.getUserId(authentication);
-       if (Objects.equals(userId, id)) {
-            // 로그인이 되어있는 판매자의 id와 판매자 페이지에 접속하는 id가 같아야 함
-            model.addAttribute("admin", memberService.findUser(id));
+    @GetMapping("mypage")
+    public String sellerPage(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        // PrincipalDetails에서 필요한 정보 추출
+        Long userId = principalDetails.getMember().getId();
+        // 로그인이 되어있는 판매자의 id와 판매자 페이지에 접속하는 id가 같아야 함
+        model.addAttribute("admin", memberService.findUser(userId));
 
-            return "admin/sellerPage";
-       } else {
-           return "redirect:/main";
-       }
+        return "admin/sellerPage";
     }
 
 
@@ -58,10 +55,10 @@ public class AdminPageController {
     @GetMapping("/newitem")
     public String itemSaveForm(Authentication authentication, Model model) {
         Member member = memberService.getAuthenticatedMember(authentication);
-            if (member != null && member.getRole().equals(MemberRole.ADMIN)) {
-                // 판매자
-                return "/admin/itemForm";
-            }
+        if (member != null && member.getRole().equals(MemberRole.ADMIN)) {
+            // 판매자
+            return "/admin/itemForm";
+        }
         // 일반 회원이거나 인증되지 않은 사용자이면 거절 -> main
         return "redirect:/main";
     }
@@ -83,34 +80,21 @@ public class AdminPageController {
     }
 
 
-
-
     // 상품 관리 페이지
-    @GetMapping("/admin/{id}/manage/")
-    public String itemManage(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        if (Objects.equals(principalDetails.getMember().getId(), id)) {
-            // 로그인이 되어있는 판매자의 id와 상품관리 페이지에 접속하는 id가 같아야 함
-            model.addAttribute("admin", memberService.findUser(id));
+    @GetMapping("/manage/")
+    public String itemManage(Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-            return "admin/itemManage";
-        } else {
-            return "redirect:/main";
-        }
+        return "admin/itemManage";
     }
+
     // 판매 내역 조회 페이지
-    @GetMapping("/admin/salelist/{id}")
-    public ModelAndView saleList(@PathVariable("id")Integer id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    @GetMapping("/salelist")
+    public ModelAndView saleList(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         ModelAndView mv = new ModelAndView();
-        // 로그인이 되어있는 유저의 id와 판매내역에 접속하는 id가 같아야 함
-        if (Objects.equals(principalDetails.getMember().getId(), id)) {
-            List<Item> saleItemList = saleService.getItemsOnSale();
-            mv.addObject("sellerSaleItems", saleItemList);
-            mv.setViewName("admin/itemManage");
-            return mv;
-        }
-        else {
-            mv.setViewName("redirect:/main");
-            return mv;
-        }
+
+        List<Item> saleItemList = saleService.getItemsOnSale();
+        mv.addObject("sellerSaleItems", saleItemList);
+        mv.setViewName("admin/itemManage");
+        return mv;
     }
 }

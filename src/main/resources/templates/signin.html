@@ -49,7 +49,17 @@
             </div>
         </div>
     </div>
-    </div>
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const loginError = urlParams.get('error');
+            const errorMessage = urlParams.get('exception');
+
+            if (loginError && errorMessage) {
+                alert(decodeURIComponent(errorMessage));
+            }
+        };
+    </script>
 </section>
 </body>
 </html>

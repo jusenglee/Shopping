@@ -1,6 +1,6 @@
 <!--resources/templates/fragments/header.html-->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <div th:fragment="header">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container px-4 px-lg-5">
@@ -10,7 +10,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a aria-current="page" class="nav-link active" th:href="@{/main}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" sec:authorize="hasRole('ADMIN')" th:href="@{admin/newitem}">upload</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" sec:authorize="hasRole('ADMIN')" th:href="@{admin/{id}(id=${member.getId()})/manage}">Manage</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" sec:authorize="hasRole('ADMIN')" th:href="@{admin/manage}">Manage</a></li>
                     <li class="nav-item dropdown">
                         <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" id="navbarDropdown" role="button">Shop</a>
                         <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
@@ -20,7 +20,6 @@
                             <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
                         </ul>
                     </li>
-
                     <form class="d-md-inline-flex">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
@@ -38,36 +37,15 @@
                     </button>
                 </form>
 
-
-                <div sec:authorize="hasRole('ROLE_USER')">
-                    <form id="user-form" >
-                        <div class="dropdown">
-                            <button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle btn-outline-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" type="button">
-                                회원님
-                            </button>
-                            <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">마이페이지</a></li>
-                                <li><a class="dropdown-item" href="#">장바구니</a></li>
-                                <li><a class="dropdown-item" href="#">주문내역</a></li>
-                            </ul>
-                        </div>
-                    </form>
-                </div>
-
-                <div sec:authorize="hasRole('ROLE_ADMIN')">
-                    <form id="admin-form">
-                        <div class="dropdown">
-                            <button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle btn-outline-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" type="button">
-                                판매자님
-                            </button>
-                            <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu">
-                                <li><a class="dropdown-item"  href="#">판매자페이지</a></li>
-                                <li><a class="dropdown-item"   href="#">상품관리</a></li>
-                                <li><a class="dropdown-item" href="#">판매내역</a></li>
-                            </ul>
-                        </div>
-                    </form>
-                </div>
+                <form id="mber-form" sec:authorize="isAuthenticated()">
+                    <div class="dropdown">
+                        <button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle btn-outline-dark" data-bs-toggle="dropdown" id="dropdownMenuButton" type="button">
+                            <span id="mberName">aa</span> 판매자님
+                        </button>
+                        <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu" id="mberNemu">
+                        </ul>
+                    </div>
+                </form>
 
                 <form method="post" sec:authorize="isAuthenticated()" th:action="@{/members/logout}" >
                     <button class="btn btn-outline-dark" type="submit">

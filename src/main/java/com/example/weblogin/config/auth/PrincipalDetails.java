@@ -35,6 +35,7 @@ public class PrincipalDetails implements UserDetails {
     public String getPassword() {
         return member.getPassword();
     }
+    public Long getId() { return member.getId(); }
 
     @Override
     public String getUsername() {

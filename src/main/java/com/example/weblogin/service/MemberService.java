@@ -6,8 +6,6 @@ import com.example.weblogin.domain.member.Member;
 import com.example.weblogin.domain.member.MemberRepository;
 import com.example.weblogin.domain.member.MemberRole;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -67,22 +65,15 @@ public class MemberService {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (GrantedAuthority authority : authorities) {
             if (authority.getAuthority().equals("ROLE_" + MemberRole.USER.name())) {
-                Member user = memberRepository.findByEmail(authentication.getName());
-                return user;
+                return memberRepository.findByEmail(authentication.getName());;
 
             } else if (authority.getAuthority().equals("ROLE_" + MemberRole.ADMIN.name())) {
-                Member admin = memberRepository.findByEmail(authentication.getName());
-                return admin;
+                return memberRepository.findByEmail(authentication.getName());;
             }
         }
             return null;
     }
 
-    //사용자 체크, id 반환
-    public Long getUserId(Authentication authentication) {
-        Member member = getAuthenticatedMember(authentication);
-        return member.getId();
-    }
     //사용자 인증확인
     public Member getAuthenticatedMember(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {

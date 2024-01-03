@@ -10,6 +10,8 @@ import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.Kategorie;
+import com.example.weblogin.domain.itemCategory.KategorieRepository;
+import com.example.weblogin.domain.itemCategory.BrandRepository;
 import com.example.weblogin.domain.orderItem.OrderItem;
 import com.example.weblogin.domain.orderItem.OrderItemRepository;
 import com.example.weblogin.domain.saleitem.SaleItem;
@@ -40,14 +42,15 @@ public class ItemService {
     private final OrderItemRepository orderItemRepository;
 
     private final SaleItemRepository saleItemRepository;
-    private final Kategori_Brnad_Service kategorieService;
+    private final KategorieRepository kategorieRepository;
+    private final BrandRepository brandRepository;
 
 
     // 상품 등록
     public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
         // 상품 등록
-        Kategorie category = kategorieService.findKategorieById(itemFormDto.getCategory());
-        Brand brand = kategorieService.findBrandById(itemFormDto.getBrand());
+        Kategorie category = kategorieRepository.findKategorieById(itemFormDto.getCategory());
+        Brand brand = brandRepository.findBrandById(itemFormDto.getBrand());
         Item item = itemFormDto.toEntity(brand, category);
         itemRepository.save(item);
 

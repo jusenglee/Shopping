@@ -15,13 +15,9 @@ import javax.persistence.Id;
 @Getter
 @Entity(name = "brand")
 public class Brand {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-
-
-
 }

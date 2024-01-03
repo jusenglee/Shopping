@@ -47,7 +47,7 @@ public class Member extends BaseEntity {
     @Column(name = "member_role")
     private Enum<MemberRole> role;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<Order> orders = new ArrayList<>();
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)

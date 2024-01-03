@@ -16,11 +16,15 @@ public class ItemController {
     private final ItemService itemService;
     private final BrandRepository brandRepository;
 
+    @GetMapping("/")
+    public String redirectToMain() {
+        return "redirect:/main";
+    }
+
     // 메인 페이지 html 하나로 통일
     // 메인 페이지 (로그인 안 한 유저) /localhost:8080
-    @GetMapping("main")
+    @GetMapping("/main")
     public String mainPage(Model model, Authentication authentication) {
-
         return "mainPage";
     }
 

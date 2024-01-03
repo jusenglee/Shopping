@@ -7,7 +7,7 @@ import com.example.weblogin.domain.DTO.MainItemDto;
 import com.example.weblogin.domain.item.ItemRepositoryCustom;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.BrandRepository;
-import com.example.weblogin.domain.itemCategory.CategorieRepository;
+import com.example.weblogin.domain.itemCategory.KategorieRepository;
 import com.example.weblogin.domain.itemCategory.Kategorie;
 import com.example.weblogin.domain.member.Member;
 import com.example.weblogin.service.ItemService;
@@ -36,7 +36,7 @@ public class RestItemController {
     private final ItemService itemService;
     private final MemberService memberService;
     private final ItemRepositoryCustom itemRepositoryCustom;
-    private final CategorieRepository categorieRepository;
+    private final KategorieRepository kategorieRepository;
     private final BrandRepository brandRepository;
 
         // 상품 등록
@@ -60,7 +60,7 @@ public class RestItemController {
 
     @GetMapping("/categories")//카테고리 정보(목록) 가져오기
     public List<Kategorie> getCategories() {
-        return categorieRepository.findAll();
+        return kategorieRepository.findAll();
     }
 
     @GetMapping("/brands") // 브랜드 정보(목록) 가져오기

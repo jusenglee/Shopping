@@ -88,7 +88,7 @@ public class Cart extends BaseEntity {
                 .sum();
     }
 
-    //
+    //상품 정보 찾기
     private CartItem findCartItem(Long itemId) {
         return cartItems.stream()
                 .filter(cartItem -> cartItem.isSameItem(itemId))
