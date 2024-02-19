@@ -1,208 +1,101 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>판매자 페이지</title>
-    <!-- Bootstrap icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <!-- Core theme CSS (includes Bootstrap)-->
-    <link href="/css/styles.css" rel="stylesheet" />
+<html layout:decorate="~{layouts/default}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<div layout:fragment="content">
+	<!-- 사이드바와 메인 콘텐츠를 감싸는 컨테이너 -->
+	<div class="content-wrapper">
+		<!-- 사이드바 -->
+		<div class="sidebar">
+			<ul>
+				<li th:classappend="${currentPage == 'myPage' ? 'active' : ''}"><a href="#" th:href="@{myPage}">대시보드</a>
+				</li>
+				<li th:classappend="${currentPage == 'newItem' ? 'active' : ''}"><a href="#" th:href="@{newItem}">상품
+				                                                                                                  등록</a>
+				</li>
+				<li th:classappend="${currentPage == 'manage' ? 'active' : ''}"><a href="#" th:href="@{manage}">상품
+				                                                                                                관리</a>
+				</li>
+				<li th:classappend="${currentPage == 'modify' ? 'active' : ''}"><a href="#" th:href="@{/user/modify}">개인정보
+				                                                                                                      수정</a>
+				</li>
+				<li th:classappend="${currentPage == 'saleList' ? 'active' : ''}"><a href="#" th:href="@{saleList}">판매
+				                                                                                                    내역</a>
+				</li>
+				<!-- Add other sidebar items here -->
+			</ul>
+		</div>
 
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
-        }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
-</head>
-<body> <!-- Navigation-->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" th:href="@{/main}">쇼핑몰</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{/main}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" th:href="@{admin/newitem}" sec:authorize="hasRole('ADMIN')">upload</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" th:href="@{admin/{id}(id=${member.getId()})/manage}" sec:authorize="hasRole('ADMIN')">Manage</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" th:href="@{/item/list}">All Products</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                        <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <form th:action="@{/members/signin}" sec:authorize="!isAuthenticated()">
-                <button class="btn btn-outline-dark" type="submit">
-                    로그인
-                </button>
-            </form>
-            <form th:action="@{/members/signup}" sec:authorize="!isAuthenticated()">
-                <button class="btn btn-outline-dark" type="submit">
-                    회원가입
-                </button>
-            </form>
-
-            <div sec:authorize="hasRole('ROLE_USER')">
-                <form id="user-form" >
-                    <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle btn-outline-dark" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            회원님
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#">마이페이지</a></li>
-                            <li><a class="dropdown-item" href="#">장바구니</a></li>
-                            <li><a class="dropdown-item" href="#">주문내역</a></li>
-                        </ul>
-                    </div>
-                </form>
-            </div>
-
-            <div sec:authorize="hasRole('ROLE_ADMIN')">
-                <form id="admin-form">
-                    <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle btn-outline-dark" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            판매자님
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item"  href="#">판매자페이지</a></li>
-                            <li><a class="dropdown-item"   href="#">상품관리</a></li>
-                            <li><a class="dropdown-item" href="#">판매내역</a></li>
-                        </ul>
-                    </div>
-                </form>
-            </div>
-
-            <form th:action="@{/members/logout}" method="post" sec:authorize="isAuthenticated()" >
-                <button class="btn btn-outline-dark" type="submit">
-                    로그아웃
-                </button>
-            </form>
-
-        </div>
-    </div>
-</nav>
-<!-- SIDE BAR -->
-<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-    <div class="position-sticky pt-3">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" th:href="@{/admin/{id}(id=${admin.getId()})}">
-                    <span data-feather="home"></span>
-                    판매자페이지
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" th:href="@{/admin/{id}(id=${admin.getId()})/manage}">
-                    <span data-feather="home"></span>
-                    상품관리
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/admin/salelist/{id}(id=${admin.getId()})}">
-                    <span data-feather="file"></span>
-                    판매내역
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">판매자페이지</h1>
-    </div>
-</main>
-
-<div class="container">
-    <div class="main-body">
-
-        <div class="row gutters-sm">
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex flex-column align-items-center text-center">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
-                            <div class="mt-3">
-                                <h4 th:text="${admin.getName()}">John Doe</h4>
-                                <a type="button" class="btn btn-primary" th:href="@{/user/modify/{id}(id=${admin.id})}">정보수정</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <h6 class="mb-0">판매자이름</h6>
-                            </div>
-                            <div class="col-sm-9 text-secondary" th:text="${admin.getName()}">
-                                판매자이름
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <h6 class="mb-0">닉네임</h6>
-                            </div>
-                            <div class="col-sm-9 text-secondary">
-                                판매자 닉네임
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <h6 class="mb-0">이메일</h6>
-                            </div>
-                            <div class="col-sm-9 text-secondary" th:text="${admin.getEmail()}">
-                                fip@jukmuh.al
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <h6 class="mb-0">전화번호</h6>
-                            </div>
-                            <div class="col-sm-9 text-secondary" th:text="${admin.getPhone()}">
-                                (239) 816-9029
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <h6 class="mb-0">사업장 주소</h6>
-                            </div>
-                            <div class="col-sm-9 text-secondary" th:text="${admin.getAddress()}">
-                                Bay Area, San Francisco, CA
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-    </div>
+		<!-- 메인 콘텐츠 -->
+		<div class="main-content">
+			<div class="row">
+				<div class="col-6">
+					<div class="card">
+						<div class="card-text">
+							<h4>상품을 등록하고 판매를 시작하세요.</h4>
+							<p>수많은 고객들이 판매자님의 상품을 기다리고 있습니다!</p>
+							<p>지금 바로 상품을 등록하고 판매를 시작해보세요.</p>
+						</div>
+						<div class="row">
+							<div class="col">
+								<button class="btn btn-primary" type="button">
+									<a href="#" th:href="@{newItem}">상품등록 바로가기</a>
+								</button>
+							</div>
+							<div class="col" style="padding: 10px;">
+								<div class="illustration">
+									<!-- 이미지 삽입, 실제 이미지 경로로 대체 필요 -->
+									<img alt="Illustration" src="/image/mypage1.jpg">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="card">
+						<div class="card-text">
+							<h4>판매 중인 상품의 정보가 잘못되셨나요?</h4>
+							<p>현재 판매중인 상품의 정보는 언제든지 수정 가능합니다.</p>
+							<p>아래를 눌러 상품 관리로 이동해주세요</p>
+						</div>
+						<div class="row">
+							<div class="col">
+								<button class="btn btn-primary" type="button">
+									<a href="#" th:href="@{manage}">상품관리 바로가기</a>
+								</button>
+							</div>
+							<div class="col" style="padding: 10px;">
+								<div class="illustration">
+									<!-- 이미지 삽입, 실제 이미지 경로로 대체 필요 -->
+									<img alt="Illustration" src="/image/mypage2.jpg">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<div class="card">
+						<h4>사업자 정보를 확인해주세요.</h4>
+						<p>상품 판매를 진행 전 판매자님의 정보를 확인해주세요.</p>
+						<button class="btn btn-primary" type="button">
+							<a href="#" th:href="@{/user/modify}">개인정보 수정 바로가기</a>
+						</button>
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="card">
+						<h4>현재 판매 현황을 확인 해보세요.</h4>
+						<p>현재 판매중인 상품에서 어떤 상품이 제일 잘 팔릴지 확인 해보세요!</p>
+						<button class="btn btn-primary"  type="button">
+							<a href="#" th:href="@{saleList}">판매내역 바로가기</a>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-<footer class="my-5 pt-5 text-muted text-center text-small">
-    <p class="mb-1">&copy; 김연지 - 2022년 01월 쇼핑몰 프로젝트</p>
-</footer>
-</body>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </html>

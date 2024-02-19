@@ -4,6 +4,7 @@ import com.example.weblogin.domain.DTO.SaleInfo;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
 import com.example.weblogin.domain.item.ItemSellStatus;
+import com.example.weblogin.domain.member.Member;
 import com.example.weblogin.domain.sale.Sale;
 import com.example.weblogin.domain.sale.SaleRepository;
 import com.example.weblogin.domain.saleitem.SaleItem;
@@ -38,8 +39,8 @@ public class SaleService {
     /**
      * 판매 중인 상품 조회
      */
-    public List<Item> getItemsOnSale() {
-        return itemRepository.findAllByitemSellStatus(ItemSellStatus.SELL);
+    public List<Item> getItemsOnSaller(Member Member) {
+        return itemRepository.findByAdmin(Member);
     }
 
     /**

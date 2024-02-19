@@ -15,26 +15,24 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 $(document).ready(function () {
     $.ajax({
-        url: '/memberInfo',
-        type: 'GET',
-        success: function (data) {
+        url: '/memberInfo', type: 'GET', success: function (data) {
             console.log(data);
             var mberNm = data.name;
             var role = data.role;
             var adminLinks = `
-                        <li><a class="dropdown-item" href="/admin/mypage">판매자페이지</a></li>
-                        <li><a class="dropdown-item" href="/admin/manage">상품관리</a></li>
-                        <li><a class="dropdown-item" href="/admin/salelist">판매내역</a></li>
+                        <li><a class="dropdown-item" href="/admin/myPage">판매자페이지</a></li>
+                        <li><a class="dropdown-item" href="#" th:href="@{/admin/manage}">상품관리</a></li>
+                        <li><a class="dropdown-item" href="#" th:href="@{/admin/saleList}">판매내역</a></li>
                         `;
             var userLinks = `
-                         <li><a class="dropdown-item" href="#">마이페이지</a></li>
-                         <li><a class="dropdown-item" href="#">장바구니</a></li>
-                         <li><a class="dropdown-item" href="#">주문내역</a></li>
+                         <li><a class="dropdown-item" href="/user/myPage">마이페이지</a></li>
+                         <li><a class="dropdown-item" href="/user/cart">장바구니</a></li>
+                         <li><a class="dropdown-item" href="/user/orderHist">주문내역</a></li>
                         `;
             $('#mberName').text(data.mberNm);
-            if(role == 'ADMIN') {
+            if (role == 'ADMIN') {
                 $('#mberNemu').html(adminLinks);
-            }else{
+            } else {
                 $('#mberNemu').html(userLinks);
             }
         }
