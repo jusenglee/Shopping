@@ -8,7 +8,6 @@
 </head>
 <body>
 
-
 <section class="vh-100" style="background-color: #3d3d3d;">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -16,34 +15,32 @@
                 <div class="card" style="border-radius: 1rem;">
                     <div class="col-md-6 col-lg-7 d-flex align-items-center">
                         <div class="card-body p-4 p-lg-5 text-black">
-
-                            <form action="/signin" method="post" class="container">
+                            <form th:action="@{/members/signin}" method="post" class="container">
                                 <div class="d-flex align-items-center mb-3 pb-1">
                                     <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
                                     <span class="h1 fw-bold mb-0">로그인</span>
                                 </div>
-
                                 <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign into your account</h5>
 
                                 <div class="form-outline mb-4">
-                                    <input type="text" id="username" name="username" class="form-control form-control-lg" required="required" placeholder="root"/>
-                                    <label class="form-label" for="username">Username</label>
+                                    <input type="text" id="email" name="email" class="form-control form-control-lg" required="required" placeholder="email"/>
+                                    <label class="form-label" for="email">email</label>
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <input type="password" id="password" name="password" class="form-control form-control-lg" required="required" placeholder="root"/>
+                                    <input type="password" id="password" name="password" class="form-control form-control-lg" required="required" placeholder="PassWord"/>
                                     <label class="form-label" for="password">Password</label>
                                 </div>
 
                                 <div class="pt-1 mb-4">
                                     <button class="btn btn-dark btn-lg btn-block" type="submit">Login</button>
                                 </div>
-
-                                <p class="pb-lg-2" style="color: #393f81;">아이디가 없으신가요? <a th:href="@{/signup}" style="color: #393f81;">회원가입</a></p>
-                                <p class="mb-5 pb-lg-2" style="color: #393f81;">로그인 없이 이용하고 싶으신가요? <a th:href="@{/}" style="color: #393f81;">이동하기</a></p>
+                                <p class="pb-lg-2" style="color: #393f81;">아이디가 없으신가요? <a th:href="@{/members/signup}" style="color: #393f81;">회원가입</a></p>
+                                <p class="mb-5 pb-lg-2" style="color: #393f81;">로그인 없이 이용하고 싶으신가요? <a th:href="@{/main}" style="color: #393f81;">이동하기</a></p>
 
                                 <a href="#!" class="small text-muted">Terms of use.</a>
                                 <a href="#!" class="small text-muted">Privacy policy</a>
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                             </form>
 
                         </div>
@@ -52,7 +49,17 @@
             </div>
         </div>
     </div>
-    </div>
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const loginError = urlParams.get('error');
+            const errorMessage = urlParams.get('exception');
+
+            if (loginError && errorMessage) {
+                alert(decodeURIComponent(errorMessage));
+            }
+        };
+    </script>
 </section>
 </body>
 </html>

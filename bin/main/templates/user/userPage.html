@@ -39,15 +39,11 @@
 
             </ul>
             <form class="d-flex">
-                <a class="btn btn-outline-dark" th:href="@{/user/cash/{id}(id=${user.getId()})}" th:text="|현재잔액 : ${user.getCoin()} ₩|">
-                    현재잔액 : 10000 ₩
-                </a>
                 <a class="btn btn-outline-dark" th:href="@{/user/cart/{id}(id=${user.getId()})}">
                     <i class="bi-cart-fill me-1"></i>
                     Cart
-                    <span class="badge bg-dark text-white ms-1 rounded-pill" th:text="${user.getCart().getCount()}">0</span>
                 </a>
-                <a class="btn btn-outline-dark" th:href="@{/seller/{id}(id=${user.getId()})}" th:text="|${user.getName()}님 환영합니다.|">
+                <a class="btn btn-outline-dark" th:href="@{/templates/admin/{id}(id=${user.getId()})}" th:text="|${user.getName()}님 환영합니다.|">
                     마이페이지
                 </a>
                 <a class="btn btn-outline-dark" th:href="@{/logout}">
@@ -83,9 +79,9 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/user/cash/{id}(id=${user.getId()})}">
+                <a class="nav-link" >
                     <span data-feather="file"></span>
-                    충전하기
+                    고객센터
                 </a>
             </li>
         </ul>
@@ -100,7 +96,11 @@
 
 <div class="container">
     <div class="main-body">
-
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">마이페이지</h1>
+            </div>
+        </main>
         <div class="row gutters-sm">
             <div class="col-md-4 mb-3">
                 <div class="card">
@@ -108,7 +108,7 @@
                         <div class="d-flex flex-column align-items-center text-center">
                             <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
                             <div class="mt-3">
-                                <h4 th:text="${user.getUsername()}">John Doe</h4>
+                                <h4 th:text="${user.getName()}">John Doe</h4>
                                 <a type="button" class="btn btn-primary" th:href="@{/user/modify/{id}(id=${user.id})}">정보수정</a>
                             </div>
                         </div>
@@ -130,9 +130,6 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <h6 class="mb-0">닉네임</h6>
-                            </div>
-                            <div class="col-sm-9 text-secondary" th:text="${user.getUsername()}">
-                                회원 닉네임
                             </div>
                         </div>
                         <hr>
