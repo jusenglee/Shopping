@@ -1,78 +1,86 @@
 <!DOCTYPE html>
-<html layout:decorate="~{layouts/default}"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:th="http://www.thymeleaf.org">
-<head>
-    <script src="/js/itemForm.js"></script>
-</head>
-<body>
+<html layout:decorate="~{layouts/default}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <div layout:fragment="content">
-    <!-- Product section-->
-    <section class="py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="row gx-4 gx-lg-5 align-items-center">
-                <!--<div class="col-md-7 col-lg-8 container">-->
-                <form enctype="multipart/form-data" method="post" role="form" th:action="@{/admin/manage/item/new}"
-                      >
-                     <div class="row g-3">
-                        <hr/>
-                        <div class="col-12">
-                            <label class="form-label">상품 상태</label><br/>
-                            <input id="SELL" name="itemSellStatus" type="radio" value="SELL">판매중<br/>
-                            <input id="SOLD_OUT" name="itemSellStatus" type="radio" value="SOLD_OUT">품절<br/>
-                        </div>
+	<script src="/js/newItem.js"></script>
+	<!-- 사이드바와 메인 콘텐츠를 감싸는 컨테이너 -->
+	<div class="content-wrapper">
+		<!-- 사이드바 -->
+		<div class="sidebar">
+			<ul>
+				<li th:classappend="${currentPage == 'myPage' ? 'active' : ''}">
+					<a href="#" th:href="@{myPage}">대시보드</a>
+				</li>
+				<li th:classappend="${currentPage == 'newItem' ? 'active' : ''}">
+					<a href="#" th:href="@{newItem}">상품 등록</a></li>
+				<li th:classappend="${currentPage == 'manage' ? 'active' : ''}">
+					<a href="#" th:href="@{manage}">상품 관리</a></li>
+				<li th:classappend="${currentPage == 'modify' ? 'active' : ''}">
+					<a href="#" th:href="@{/user/modify}">개인정보 수정</a></li>
+				<li th:classappend="${currentPage == 'saleList' ? 'active' : ''}">
+					<a href="#" th:href="@{saleList}">판매 내역</a></li>
+			</ul>
+		</div>
 
-                         <div class="col-12">
-                             <label class="form-label">카테고리</label>
-                             <select class="form-select form-select-sm"  id="category" name="category">
-                             </select>
-                         </div>
 
-                         <div class="col-12">
-                             <label class="form-label">브랜드</label>
-                             <select class="form-select form-select-sm"  id="brand" name="brand">
-                             </select>
-                         </div>
-                        <div class="col-12">
-                            <label class="form-label">상품명</label>
-                            <input class="form-control" placeholder="상품명을 입력해주세요"  type="text" name="itemNm" id="itemNm">
-                        </div>
+		<!-- 메인 콘텐츠 -->
+		<div class="main-content">
+			<div class="row gx-4 gx-lg-5 align-items-center">
+				<form enctype="multipart/form-data" id="form" method="post" role="form" th:action="@{newItemAjax}">
+					<!-- 오류 메시지를 표시할 컨테이너 -->
+					<div class="col-12 mt-3" id="formErrors"></div>
+					<div class="row g-3">
+						<div class="col-12">
+							<label class="form-label">상품 상태</label><br/>
+							<input id="SELL" name="itemSellStatus" type="radio" value="SELL"><label for="SELL">판매중</label>
+							<br/>
+							<input id="SOLD_OUT" name="itemSellStatus" type="radio" value="SOLD_OUT"><label for="SOLD_OUT">품절</label>
+							<br/>
+						</div>
 
-                        <div class="col-12">
-                            <label  class="form-label">상품 설명</label>
-                            <input class="form-control" name="itemDetail" id="itemDetail" placeholder="상품 설명을 입력하세요." type="text">
-                        </div>
+						<div class="col-12">
+							<label class="form-label" for="category">카테고리</label>
+							<select class="form-select form-select-sm" id="category" name="category"></select>
+						</div>
 
-                        <div class="col-12">
-                            <label class="form-label">상품 가격</label>
-                            <input class="form-control" id="price" name="price" placeholder="상품 가격을 입력하세요."  type="text">
-                        </div>
+						<div class="col-12">
+							<label class="form-label" for="brand">브랜드</label>
+							<select class="form-select form-select-sm" id="brand" name="brand"></select>
+						</div>
+						<div class="col-12">
+							<label class="form-label" for="itemNm">상품명</label>
+							<input class="form-control" id="itemNm" name="itemNm" placeholder="상품명을 입력해주세요" type="text">
+						</div>
 
-                        <div class="col-12">
-                            <label class="form-label">상품 재고</label>
-                            <input class="form-control" id="stock" name="stock" placeholder="상품 재고를 입력하세요."
-                                   type="text">
-                        </div>
+						<div class="col-12">
+							<label class="form-label" for="itemDetail">상품 설명</label>
+							<input class="form-control" id="itemDetail" name="itemDetail" placeholder="상품 설명을 입력하세요." type="text">
+						</div>
 
-                         <div class="form-group">
-                             <div class="custom-file img-div">
-                                 <input class="custom-file-input" name="itemImgFile" type="file" multiple>
-                                 <label class="custom-file-label">상품이미지 선택</label>
-                             </div>
-                         </div>
-                         </div>
-                    <hr class="my-4">
-                    <div style="text-align: center">
-                    <button class="w-100 btn btn-primary btn-lg mb-3" type="submit">상품 등록</button>
-                    </div>
-                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+						<div class="col-12">
+							<label class="form-label" for="price">상품 가격</label>
+							<input class="form-control" id="price" name="price" placeholder="상품 가격을 입력하세요." type="number">
+						</div>
 
-                </form>
-            </div>
-        </div>
-    </section>
+						<div class="col-12">
+							<label class="form-label" for="stock">상품 재고</label>
+							<input class="form-control" id="stock" name="stock" placeholder="상품 재고를 입력하세요." type="number">
+						</div>
+
+						<div class="form-group">
+							<div class="custom-file img-div">
+								<input class="custom-file-input" multiple name="itemImgFile" type="file">
+								<label class="custom-file-label">상품이미지 선택</label>
+							</div>
+						</div>
+					</div>
+					<hr class="my-4">
+					<input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+				</form>
+				<div style="text-align: center">
+					<button class="w-100 btn btn-primary btn-lg mb-3" id="formBtn" type="button">상품 등록</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-<script>
-</script>
-</body>
 </html>

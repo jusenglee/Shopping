@@ -36,12 +36,10 @@
 
 </head>
 <body>
-
-<div th:replace="fragments/header::header"></div>
-
-<div class="content" layout:fragment="content"></div>
-
-<div th:replace="fragments/footer::footer"></div>
-
+    <div class="page-container">
+        <div th:replace="fragments/header::header"></div>
+        <div class="content" layout:fragment="content"></div>
+        <div th:replace="fragments/footer::footer"></div>
+    </div>
 </body>
 </html>

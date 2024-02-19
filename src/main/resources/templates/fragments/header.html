@@ -8,7 +8,7 @@
             <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a aria-current="page" class="nav-link active" th:href="@{/main}">Home</a></li>
+                    <li class="nav-item"><a aria-current="page" class="nav-link" th:href="@{/main}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" sec:authorize="hasRole('ADMIN')" th:href="@{admin/newitem}">upload</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" sec:authorize="hasRole('ADMIN')" th:href="@{admin/manage}">Manage</a></li>
                     <li class="nav-item dropdown">
@@ -56,19 +56,6 @@
             </div>
         </div>
     </nav>
-    <!-- Header-->
-    <header class="bg-dark py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="d-flex justify-content-center">
-                <div class="bxslider">
-                    <div><img src="/image/Banner1.jpg" /></div>
-                    <div><img src="/image/Banner2.jpg" /></div>
-                    <div><img src="/image/Banner3.jpg" /></div>
-                    <div><img src="/image/Banner4.jpg" /></div>
-                </div>
-            </div>
-        </div>
-        <script src="/js/scripts.js"></script>
-    </header>
+
 </div>
 </html>

@@ -1,81 +1,89 @@
 package com.example.weblogin.domain.cartItem;
 
-import com.example.weblogin.config.BaseEntity;
+import static javax.persistence.FetchType.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.example.weblogin.config.baseEntity.BaseEntity;
 import com.example.weblogin.domain.cart.Cart;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.orderItem.OrderItem;
+
 import lombok.Getter;
-
-import javax.persistence.*;
-
-import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "CartItem")
 @Getter
 public class CartItem extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_item_id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "cart_item_id")
+	private Long id;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+	@ManyToOne(fetch = LAZY)
+	@JoinColumn(name = "cart_id")
+	private Cart cart;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "item_id")
-    private Item item;
+	@ManyToOne(fetch = LAZY)
+	@JoinColumn(name = "item_id")
+	private Item item;
 
-    @Column(name = "quantity")
-    private Integer quantity;
+	@Column(name = "quantity")
+	private Integer quantity;
 
-    protected CartItem() {
-        // for JPA
-    }
+	protected CartItem() {
+		// for JPA
+	}
 
-    public CartItem(Cart cart, Item item, Integer quantity) {
-        this.cart = cart;
-        this.item = item;
-        this.quantity = quantity;
-    }
+	public CartItem(Cart cart, Item item, Integer quantity) {
+		this.cart = cart;
+		this.item = item;
+		this.quantity = quantity;
+	}
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
+	public Long getId() {
+		return id;
+	}
 
+	public Cart getCart() {
+		return cart;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setCart(Cart cart) {
+		this.cart = cart;
+	}
 
-    public Cart getCart() {
-        return cart;
-    }
+	public Item getItem() {
+		return item;
+	}
 
-    public Item getItem() {
-        return item;
-    }
+	public Integer getQuantity() {
+		return quantity;
+	}
 
-    public Integer getQuantity() {
-        return quantity;
-    }
-    public void changeQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
+	public void changeQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
 
-    public Integer getTotalPrice() {
-        return getItem().getPrice() * getQuantity();
-    }
-    public void cancel() {
-        getItem().addStockQuantity(quantity);
-    }
+	public Integer getTotalPrice() {
+		return getItem().getPrice() * getQuantity();
+	}
 
-    public OrderItem toOrderItem() {
-        return OrderItem.createOrderItem(item, item.getPrice(), quantity);
-    }
+	public void cancel() {
+		getItem().addStockQuantity(quantity);
+	}
 
-    public boolean isSameItem(Long item) {
-        return this.item.getId().equals(item);
-    }
+	public OrderItem toOrderItem() {
+		return OrderItem.createOrderItem(item, item.getPrice(), quantity);
+	}
+
+	public boolean isSameItem(Long item) {
+		return this.item.getId().equals(item);
+	}
 }
