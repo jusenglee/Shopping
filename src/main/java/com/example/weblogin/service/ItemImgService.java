@@ -31,7 +31,7 @@ public class ItemImgService {
         //파일 업로드
         if (StringUtils.hasText(oriImgName)) {
             imgName = fileService.uploadFile(itemImgLocation, oriImgName, itemImgFile.getBytes());
-            imgUrl = "/images/" + imgName;
+            imgUrl = "/image/" + imgName;
         }
 
 
