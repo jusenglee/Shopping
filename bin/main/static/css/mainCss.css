@@ -1,0 +1,136 @@
+/* main page 페이지 전체를 감싸는 컨테이너 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+/* 사이드바 전체를 감싸는 컨테이너 */
+.page-container {
+    display: flex;
+    min-height: 100vh; /* 최소 높이를 뷰포트 높이와 동일하게 설정 */
+    flex-direction: column; /* 요소들을 세로로 쌓음 */
+}
+
+/* 메인 콘텐츠와 사이드바를 포함하는 컨테이너 */
+.content-wrapper {
+    background-color: #edf0f3;
+    display: flex;
+    flex: 1; /* 나머지 공간을 모두 채움 */
+}
+.main-content{
+    flex: 1;
+    margin: 20px;
+    padding: 20px;
+}
+
+
+/* 사이드바 스타일 변경 */
+.sidebar {
+    /* float: left; 제거 */
+    width: 220px;
+    background: #f8f9fa;
+    color: #282727;
+    border-top: 1px solid #e0e1e5;
+    border-right: 1px solid #e0e1e5;
+    /* height: 100vh; 제거 */
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e1e5;
+}
+
+.sidebar ul li a {
+    color: #2e2d2d;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.card {
+
+    border: 1px solid #f1f1f1;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 왼쪽 정렬 */
+    justify-content: space-between; /* 내용과 버튼 사이의 공간을 균등하게 분배 */
+    background: #ffffff;
+    overflow: hidden; /* 내부 요소가 카드 밖으로 나가지 않게 함 */
+
+}
+
+.card h4 {
+    font-size: 1.25rem; /* 제목 글자 크기 */
+    font-weight: bold; /* 글자 굵기 */
+    margin-bottom: .5rem; /* 제목 아래 마진 */
+}
+
+.card p {
+    font-size: 1rem; /* 본문 글자 크기 */
+    margin-bottom: 1.5rem; /* 본문 아래 마진 */
+}
+
+.card button {
+    cursor: pointer; /* 마우스 오버 시 커서 변경 */
+}
+
+.card .card-text {
+    z-index: 1;
+}
+
+.card .illustration {
+    padding: 30px;
+    position: relative;
+    flex-grow: 1;
+    justify-content: center; /* 이미지를 가운데 정렬 */
+    align-items: flex-end; /* 이미지를 아래쪽에 정렬 */
+}
+.card .illustration img {
+    max-width: 100%;
+    height: auto;
+}
+
+ul .active {
+    background-color: rgba(169, 163, 163, 0.3);
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    /* 기타 스타일 */
+}
+
+button a {
+    color: #ffffff; !important;
+    text-decoration-line:none;
+    font-weight: bold;
+}
+/* 상품관리에 사용 할 스타일 */
+.thead-light{
+    background-color: #fff;
+    border-bottom-color: rgba(135, 135, 135, 0.52);
+    border-style: solid;
+    border-bottom-width : 2px;
+}
+.badge-sale {
+          color: #fff;
+          background-color: #f44336; /* Red */
+      }
+      .badge-new {
+          color: #fff;
+          background-color: #4CAF50; /* Green */
+      }
+      .badge-hot {
+          color: #fff;
+          background-color: #ff9800; /* Orange */
+      }
+      .badge-top {
+          color: #fff;
+          background-color: #2196F3; /* Blue */
+      }

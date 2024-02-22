@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/default}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<div layout:fragment="content">
+	<!-- 사이드바와 메인 콘텐츠를 감싸는 컨테이너 -->
+	<div class="content-wrapper">
+		<!-- 사이드바 -->
+		<div class="sidebar">
+			<ul>
+				<li th:classappend="${currentPage == 'myPage' ? 'active' : ''}"><a href="#" th:href="@{myPage}">대시보드</a>
+				</li>
+				<li th:classappend="${currentPage == 'newItem' ? 'active' : ''}"><a href="#" th:href="@{newItem}">상품
+				                                                                                                  등록</a>
+				</li>
+				<li th:classappend="${currentPage == 'manage' ? 'active' : ''}"><a href="#" th:href="@{manage}">상품
+				                                                                                                관리</a>
+				</li>
+				<li th:classappend="${currentPage == 'modify' ? 'active' : ''}"><a href="#" th:href="@{/user/modify}">개인정보
+				                                                                                                      수정</a>
+				</li>
+				<li th:classappend="${currentPage == 'saleList' ? 'active' : ''}"><a href="#" th:href="@{saleList}">판매
+				                                                                                                    내역</a>
+				</li>
+				<!-- Add other sidebar items here -->
+			</ul>
+		</div>
+
+		<!-- 메인 콘텐츠 -->
+		<div class="main-content">
+			<div class="row">
+				<div class="col-6">
+					<div class="card">
+						<div class="card-text">
+							<h4>상품을 등록하고 판매를 시작하세요.</h4>
+							<p>수많은 고객들이 판매자님의 상품을 기다리고 있습니다!</p>
+							<p>지금 바로 상품을 등록하고 판매를 시작해보세요.</p>
+						</div>
+						<div class="row">
+							<div class="col">
+								<button class="btn btn-primary" type="button">
+									<a href="#" th:href="@{newItem}">상품등록 바로가기</a>
+								</button>
+							</div>
+							<div class="col" style="padding: 10px;">
+								<div class="illustration">
+									<!-- 이미지 삽입, 실제 이미지 경로로 대체 필요 -->
+									<img alt="Illustration" src="/image/mypage1.jpg">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="card">
+						<div class="card-text">
+							<h4>판매 중인 상품의 정보가 잘못되셨나요?</h4>
+							<p>현재 판매중인 상품의 정보는 언제든지 수정 가능합니다.</p>
+							<p>아래를 눌러 상품 관리로 이동해주세요</p>
+						</div>
+						<div class="row">
+							<div class="col">
+								<button class="btn btn-primary" type="button">
+									<a href="#" th:href="@{manage}">상품관리 바로가기</a>
+								</button>
+							</div>
+							<div class="col" style="padding: 10px;">
+								<div class="illustration">
+									<!-- 이미지 삽입, 실제 이미지 경로로 대체 필요 -->
+									<img alt="Illustration" src="/image/mypage2.jpg">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<div class="card">
+						<h4>사업자 정보를 확인해주세요.</h4>
+						<p>상품 판매를 진행 전 판매자님의 정보를 확인해주세요.</p>
+						<button class="btn btn-primary" type="button">
+							<a href="#" th:href="@{/user/modify}">개인정보 수정 바로가기</a>
+						</button>
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="card">
+						<h4>현재 판매 현황을 확인 해보세요.</h4>
+						<p>현재 판매중인 상품에서 어떤 상품이 제일 잘 팔릴지 확인 해보세요!</p>
+						<button class="btn btn-primary"  type="button">
+							<a href="#" th:href="@{saleList}">판매내역 바로가기</a>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</html>

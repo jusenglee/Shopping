@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/default}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<div layout:fragment="content">
+    <script src="/js/itemManage.js"></script>
+    <!-- 사이드바와 메인 콘텐츠를 감싸는 컨테이너 -->
+    <div class="content-wrapper">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <ul>
+                <li th:classappend="${currentPage == 'myPage' ? 'active' : ''}">
+                    <a href="#" th:href="@{myPage}">대시보드</a>
+                </li>
+                <li th:classappend="${currentPage == 'newItem' ? 'active' : ''}">
+                    <a href="#" th:href="@{newItem}">상품 등록</a></li>
+                <li th:classappend="${currentPage == 'manage' ? 'active' : ''}">
+                    <a href="#" th:href="@{manage}">상품 관리</a></li>
+                <li th:classappend="${currentPage == 'modify' ? 'active' : ''}">
+                    <a href="#" th:href="@{/user/modify}">개인정보 수정</a></li>
+                <li th:classappend="${currentPage == 'saleList' ? 'active' : ''}">
+                    <a href="#" th:href="@{saleList}">판매 내역</a></li>
+            </ul>
+        </div>
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!--<div class="row" style="width: 100%">
+                <div class="col-md-3">
+                    <img class="card-img" src="http://localhost:8080/image/e5840cf1-4ea3-48e5-8d9c-c661d67e8eab.png"/>
+                </div>
+                <div class="col-md-3">
+                    <div class="col">
+                        상품명 : AAA
+                    </div>
+                    <div class="col">
+                        남은 재고 : BBB
+                    </div>
+                    <div class="col">
+                        판매중인 가격 : CCC
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex flex-column align-items-end">
+                        <button class="btn btn-primary " type="button">상품 변경</button>
+                        <button class="btn btn-primary" type="button">상품 변경</button>
+                    </div>
+                </div>
+            </div>-->
+            <table class="table">
+                <thead class="thead-light">
+                <tr>
+                    <th>No</th>
+                    <th>상품명</th>
+                    <th>카테고리</th>
+                    <th>가격</th>
+                    <th>상태</th>
+                    <th>재고</th>
+                    <th>등록일</th>
+                    <th>수정일</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody id="productTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</html>
+
