@@ -2,22 +2,23 @@ package com.example.weblogin.service;
 
 import java.util.Date;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 /**
  *  JWT 토큰 생성 및 검증 서비스
  */
 @Service
 public class JwtTokenProvider {
-	@Value("${app.jwt.secret}")
-	private String jwtSecret;
+	SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
 	@Value("${app.jwt.expiration}")
 	private int jwtExpirationInMs;
@@ -28,7 +29,7 @@ public class JwtTokenProvider {
 	 * @return
 	 */
 	public String generateToken(Authentication authentication) {
-		String username = ((SecurityProperties.User)authentication.getPrincipal()).getName();
+		String username = authentication.getName();
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
@@ -36,7 +37,7 @@ public class JwtTokenProvider {
 			.setSubject(username)
 			.setIssuedAt(new Date())
 			.setExpiration(expiryDate)
-			.signWith(SignatureAlgorithm.HS512, jwtSecret)
+			.signWith(key, SignatureAlgorithm.HS512)
 			.compact();
 	}
 
@@ -47,7 +48,7 @@ public class JwtTokenProvider {
 	 */
 	public String getUsernameFromJWT(String token) {
 		Claims claims = Jwts.parser()
-			.setSigningKey(jwtSecret)
+			.setSigningKey(key)
 			.parseClaimsJws(token)
 			.getBody();
 
@@ -61,7 +62,7 @@ public class JwtTokenProvider {
 	 */
 	public boolean validateToken(String authToken) {
 		try {
-			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+			Jwts.parser().setSigningKey(key).parseClaimsJws(authToken);
 			return true;
 		} catch (Exception ex) {
 			// Log token validation errors

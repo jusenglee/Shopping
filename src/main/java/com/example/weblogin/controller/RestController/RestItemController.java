@@ -49,8 +49,8 @@ public class RestItemController {
 
 	// 상품 등록
 	@PostMapping("/admin/newItemAjax")
-	public ResponseEntity<?> itemSave(@Valid @ModelAttribute ItemFormDto itemFormDto, BindingResult bindingResult,
-		@RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Authentication authentication) throws
+	public ResponseEntity<?> itemSave(@ModelAttribute @Valid ItemFormDto itemFormDto,
+		BindingResult bindingResult) throws
 		Exception {
 		Member member = MemberService.getCurrentUserMember();
 		if (bindingResult.hasErrors()) {
@@ -60,7 +60,7 @@ public class RestItemController {
 			return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
 		} else {
 			itemFormDto.setAdmin(member);
-			itemService.saveItem(itemFormDto, itemImgFileList);
+			itemService.saveItem(itemFormDto);
 			return new ResponseEntity<>("상품 등록 완료", HttpStatus.OK);
 		}
 	}

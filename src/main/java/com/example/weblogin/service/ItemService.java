@@ -47,21 +47,20 @@ public class ItemService {
 	private final BrandRepository brandRepository;
 
 	// 상품 등록
-	public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
+	public Long saveItem(ItemFormDto itemFormDto) throws Exception {
 		// 상품 등록
-		Categorie category = categorieRepository.findKategorieById(itemFormDto.getCategory());
+		Categorie category = categorieRepository.findCategorieById(itemFormDto.getCategory());
 		Brand brand = brandRepository.findBrandById(itemFormDto.getBrand());
 		Item item = itemFormDto.toEntity(brand, category);
 		itemRepository.save(item);
 
 		//이미지 등록
-		for (int i = 0, max = itemImgFileList.size(); i < max; i++) {
+		for (int i = 0, max = itemFormDto.getItemImgFile().size(); i < max; i++) {
 			ItemImg itemImg = ItemImg.builder()
 				.item(item)
 				.repimgYn(i == 0 ? "Y" : "N")
 				.build();
-
-			itemImgService.saveItemImg(itemImg, itemImgFileList.get(i));
+			itemImgService.saveItemImg(itemImg, itemFormDto.getItemImgFile().get(i));
 		}
 
 		return item.getId();
