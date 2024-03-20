@@ -77,18 +77,30 @@ public class Item extends BaseEntity {
 	@JoinColumn(name = "member_id")
 	private Member admin;    //상품 게시자
 
+	/**
+	 * 상품정보 업데이트
+	 * @param itemFormDto 전달받은 상품 정보
+	 */
 	public void updateItem(ItemFormDto itemFormDto) {
 		this.itemNm = itemFormDto.getItemNm();
 		this.price = itemFormDto.getPrice();
-		this.stockNumber = itemFormDto.getStock();
+		this.stockNumber = itemFormDto.getStockNumber();
 		this.itemDetail = itemFormDto.getItemDetail();
 		this.itemSellStatus = itemFormDto.getItemSellStatus();
 	}
 
+	/**
+	 * 상품 주문 취소시에 재고를 원래대로 돌려놓는 메소드
+	 * @param quantity 변화되는 재고숫자
+	 */
 	public void addStockQuantity(Integer quantity) {
 		this.stockNumber += quantity;
 	}
 
+	/**
+	 * 상품 주문이 생길경우 해당 상품의 재고수를 감소시킴
+	 * @param quantity 변화되는 재고숫자
+	 */
 	public void removeStockQuantity(Integer quantity) {
 		Integer restStockQuantity = this.stockNumber - quantity;
 		if (restStockQuantity < 0) {
@@ -105,6 +117,9 @@ public class Item extends BaseEntity {
 		this.stockNumber = restStock;
 	}
 
+	/**
+	 * 상품 판매 중지
+	 */
 	public void stopSelling() {
 		if (this.itemSellStatus == ItemSellStatus.STOPPED) {
 			throw new IllegalStateException("이미 판매가 중지된 상품입니다.");
@@ -113,7 +128,7 @@ public class Item extends BaseEntity {
 	}
 
 	/**
-	 * Resume selling the item
+	 * 상품 재판매
 	 */
 	public void resumeSelling() {
 		if (this.itemSellStatus == ItemSellStatus.SELL) {
@@ -122,6 +137,9 @@ public class Item extends BaseEntity {
 		this.itemSellStatus = ItemSellStatus.SELL;
 	}
 
+	/**
+	 * 상품의 조회수를 증가시키는 메소드
+	 */
 	public void increaseHeart() {
 		this.heart += 1;
 	}

@@ -17,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.example.weblogin.service.JwtTokenProvider;
 
 /**
- *사 용자 요청의 헤더에서 JWT 토큰을 읽어 인증 과정을 수행하는 필터
+ *사용자 요청의 헤더에서 JWT 토큰을 읽어 인증 과정을 수행하는 필터
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -32,20 +32,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws
-		ServletException, IOException {
+		FilterChain filterChain) throws ServletException, IOException {
 		try {
-			String jwt = getJwtFromRequest(request);
+			// 로그인 요청 경로
+			String loginPath = "/members/signin";
+			// 현재 요청의 경로
+			String requestPath = request.getRequestURI();
+			// 로그인 요청인 경우, 이 필터의 로직을 건너뛰고 필터 체인을 계속 진행
+			if (requestPath.equals(loginPath)) {
+				filterChain.doFilter(request, response);
+				return;
+			}
 
+			String jwt = getJwtFromRequest(request);
 			if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
 				String username = tokenProvider.getUsernameFromJWT(jwt);
 				UserDetails userDetails = principalDetailsService.loadUserByUsername(username);
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 					userDetails, null, userDetails.getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(authentication);
+			} else {
+				throw new ServletException("Invalid token");
 			}
 		} catch (Exception ex) {
-			// Log exceptions
+			throw new ServletException("Invalid token");
 		}
 
 		filterChain.doFilter(request, response);

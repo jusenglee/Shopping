@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.weblogin.config.Exception.ServiceUtils;
@@ -46,26 +47,37 @@ public class ItemService {
 	private final CategorieRepository categorieRepository;
 	private final BrandRepository brandRepository;
 
-	// 상품 등록
-	public Long saveItem(ItemFormDto itemFormDto) throws Exception {
-		// 상품 등록
-		Categorie category = categorieRepository.findCategorieById(itemFormDto.getCategory());
-		Brand brand = brandRepository.findBrandById(itemFormDto.getBrand());
-		Item item = itemFormDto.toEntity(brand, category);
-		itemRepository.save(item);
+	public void saveItem(@ModelAttribute ItemFormDto itemFormDto) throws Exception {
+		try {
+			Categorie category = categorieRepository.findCategorieById(itemFormDto.getCategory())
+				.orElseThrow(() -> new EntityNotFoundException("Category not found"));
+			Brand brand = brandRepository.findBrandById(itemFormDto.getBrand())
+				.orElseThrow(() -> new EntityNotFoundException("Brand not found"));
 
-		//이미지 등록
-		for (int i = 0, max = itemFormDto.getItemImgFile().size(); i < max; i++) {
-			ItemImg itemImg = ItemImg.builder()
-				.item(item)
-				.repimgYn(i == 0 ? "Y" : "N")
-				.build();
-			itemImgService.saveItemImg(itemImg, itemFormDto.getItemImgFile().get(i));
+			Item item = new Item();
+			item.setItemNm(itemFormDto.getItemNm());
+			item.setItemDetail(itemFormDto.getItemDetail());
+			item.setItemSellStatus(itemFormDto.getItemSellStatus());
+			item.setPrice(itemFormDto.getPrice());
+			item.setStockNumber(itemFormDto.getStockNumber());
+			item.setCategory(category);
+			item.setBrand(brand);
+			item.setCountview(0); // 초기 조회수 0
+			item.setHeart(0);
+			item.setAdmin(itemFormDto.getAdmin());
+			itemRepository.save(item);
+			//이미지 등록
+			for (int i = 0, max = itemFormDto.getItemImgFile().size(); i < max; i++) {
+				ItemImg itemImg = ItemImg.builder().item(item).repimgYn(i == 0 ? "Y" : "N").build();
+				itemImgService.saveItemImg(itemImg, itemFormDto.getItemImgFile().get(i));
+			}
+		} catch (Exception e) {
+			final Exception e1 = e;
+			e1.printStackTrace();
 		}
-
-		return item.getId();
 	}
 
+	// 상품정보 가져오기
 	@Transactional(readOnly = true)
 	public ItemFormDto getItemDetail(Long itemId) {
 
@@ -73,15 +85,33 @@ public class ItemService {
 		List<ItemImgDto> itemImgDtoList = new ArrayList<>();
 
 		for (ItemImg itemImg : itemImgList) {
-			ItemImgDto itemImgDto = ItemImgDto.of(itemImg);
+			ItemImgDto itemImgDto = ItemImgDto.builder()
+				.id(itemImg.getId())
+				.imgName(itemImg.getImgName())
+				.oriImgName(itemImg.getOriImgName())
+				.imgUrl(itemImg.getImgUrl())
+				.repImgYn(itemImg.getRepimgYn())
+				.build();
 			itemImgDtoList.add(itemImgDto);
 		}
 
-		Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
-		ItemFormDto itemFormDto = ItemFormDto.of(item);
-		itemFormDto.setItemImgDtoList(itemImgDtoList);
+		Item item = itemRepository.findById(itemId)
+			.orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. ID: " + itemId));
 
-		return itemFormDto;
+		return ItemFormDto.builder()
+			.id(item.getId())
+			.category(item.getCategory().getId())
+			.brand(item.getBrand().getId())
+			.admin(item.getAdmin())
+			.itemNm(item.getItemNm())
+			.itemDetail(item.getItemDetail())
+			.itemSellStatus(item.getItemSellStatus())
+			.price(item.getPrice())
+			.stockNumber(item.getStockNumber())
+			.countview(item.getCountview())
+			.heart(item.getHeart())
+			.itemImgDtoList(itemImgDtoList)
+			.build();
 	}
 
 	// 상품 수정
@@ -92,12 +122,10 @@ public class ItemService {
 		Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(EntityNotFoundException::new);
 		item.updateItem(itemFormDto);
 
-		List<Long> itemImgIds = itemFormDto.getItemImgIds();
-
 		//이미지 등록
-		for (int i = 0, max = itemImgFileList.size(); i < max; i++) {
-			itemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
-		}
+		// for (int i = 0, max = itemImgFileList.size(); i < max; i++) {
+		// 	itemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
+		// }
 
 		return item.getId();
 	}

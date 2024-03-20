@@ -8,7 +8,7 @@ import javax.persistence.MappedSuperclass;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.Getter;
@@ -26,8 +26,8 @@ public abstract class BaseEntity {
 	@Column(updatable = false)
 	private String createdBy;
 
-	@LastModifiedBy
-	private String modifiedBy;
+	@LastModifiedDate
+	private String modifiedDate; //수정 날짜;
 
 	@CreatedDate
 	private LocalDateTime createdDate; // 생성 날짜

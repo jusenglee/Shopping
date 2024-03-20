@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.example.weblogin.domain.member.Member;
 import com.example.weblogin.service.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,9 +35,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		String token = tokenProvider.generateToken(authentication);
 		// 사용자 정보 가져오기
 		// 사용자 정보 가져오기
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String username = userDetails.getUsername();
-		String role = userDetails.getAuthorities()
+		PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
+		Member member = principalDetails.getMember();
+		String username = member.getName();
+		String role = principalDetails.getAuthorities()
 			.stream()
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("User has no roles"))
