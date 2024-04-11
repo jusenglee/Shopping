@@ -48,7 +48,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.hasRole("ADMIN")
 			.antMatchers("/user/**")
 			.authenticated()
-			.antMatchers("/members/signup", "/members/signin", "/css/**", "/js/**", "/images/**", "/members/new")
+			.antMatchers("/members/signup", "/members/signin", "/admin/brands", "/admin/categories", "/css/**",
+				"/img/**", "/js/**",
+				"/images/**",
+				"/members/new")
 			.permitAll()
 			.anyRequest()
 			.permitAll()
@@ -69,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.exceptionHandling()
 			.accessDeniedPage("/access-denied");
 
-		// JWTAuthenticationFilter 추가
+		//JWTAuthenticationFilter 추가
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
@@ -80,6 +83,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers(
+			"/css/**", "/img/**", "/js/**", "/images/**", "/admin/brands", "/admin/categories"
+		);
 		web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
 }

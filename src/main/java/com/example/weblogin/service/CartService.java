@@ -1,6 +1,14 @@
 package com.example.weblogin.service;
 
-import com.example.weblogin.config.Exception.ServiceUtils;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.weblogin.config.Exception.DataNotFoundException;
+import com.example.weblogin.config.Exception.ItemNotFoundException;
 import com.example.weblogin.domain.DTO.CartDto;
 import com.example.weblogin.domain.cart.Cart;
 import com.example.weblogin.domain.cart.CartRepository;
@@ -18,93 +26,98 @@ import com.example.weblogin.domain.orderItem.OrderItem;
 import com.example.weblogin.domain.sale.Sale;
 import com.example.weblogin.domain.sale.SaleRepository;
 import com.example.weblogin.domain.saleitem.SaleItem;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
-import java.util.List;
-
 
 @RequiredArgsConstructor
 @Service
 @Transactional
 public class CartService {
 
-    private final MemberRepository memberRepository;
-    private final ItemRepository itemRepository;
-    private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
-    private  final OrderRepository orderRepository;
-    private final SaleRepository saleRepository;
+	@Autowired
+	private MemberRepository memberRepository;
+	@Autowired
+	private ItemRepository itemRepository;
+	@Autowired
+	private CartRepository cartRepository;
+	@Autowired
+	private CartItemRepository cartItemRepository;
+	@Autowired
+	private OrderRepository orderRepository;
+	@Autowired
+	private SaleRepository saleRepository;
 
+	//카트에 상품 추가
+	public void addItemToCart(Long memberId, Long itemId, int quantity) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new DataNotFoundException("해당 회원이 존재하지 않습니다."));
+		Item item = itemRepository.findById(itemId)
+			.orElseThrow(ItemNotFoundException::new);
+		Cart cart = member.getCart();
+		//회원애게 카트가 존재하지 않을 경우 카트 새로 생성
+		if (cart == null) {
+			cart = Cart.createCart(member);
+			member.setCart(cart);
+			cartRepository.save(cart);
+		}
+		//장바구니에 상품 추가
+		cart.addItem(item, quantity);
+	}
 
-    //카트에 상품 추가
-    public void addItemToCart(Long memberId, Long itemId, int quantity) {
-        Member member = ServiceUtils.getOrThrow(memberRepository.findById(memberId), "유저를 찾을 수 없습니다.");
-        Item item = ServiceUtils.getOrThrow(itemRepository.findById(itemId), "상품을 찾을 수 없습니다.");
+	//카트 상품 모두 주문
+	public void orderAllCartItems(Long memberId) {
+		// 회원과 장바구니 조회
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new DataNotFoundException("해당 회원이 존재하지 않습니다."));
+		Cart cart = cartRepository.findByMember(member)
+			.orElseThrow(() -> new DataNotFoundException("해당 장바구니가 존재하지 않습니다."));
 
-        Cart cart = member.getCart();
-        //회원애게 카트가 존재하지 않을 경우 카트 새로 생성
-        if (cart == null) {
-            cart = Cart.createCart(member);
-            member.setCart(cart);
-            cartRepository.save(cart);
-        }
-        //장바구니에 상품 추가
-        cart.addItem(item, quantity);
-    }
+		if (cart.isEmpty()) {
+			throw new IllegalStateException("카트가 비었습니다");
+		}
+		//배송 정보 생성
+		Delivery delivery = new Delivery();
+		delivery.setAddress(member.getAddress());
+		delivery.setDeliveryStatus(DeliveryStatus.Ready);
 
-    //카트 상품 모두 주문
-    public void orderAllCartItems(Long memberId) {
-        // 회원과 장바구니 조회
-        Member member = ServiceUtils.getOrThrow(memberRepository.findById(memberId), "사용자를 찾을 수 없습니다");
-        Cart cart = ServiceUtils.getOrThrow(cartRepository.findByMember(member), "카트를 찾을 수 없습니다");
+		//주문 항목 생성
+		List<CartItem> cartItems = cart.getCartItems();
+		OrderItem[] orderItems = cartItems.stream()
+			.map(CartItem::toOrderItem)
+			.toArray(OrderItem[]::new);
 
-        if (cart.isEmpty()) {
-            throw new IllegalStateException("카트가 비었습니다");
-        }
-        //배송 정보 생성
-        Delivery delivery = new Delivery();
-        delivery.setAddress(member.getAddress());
-        delivery.setDeliveryStatus(DeliveryStatus.Ready);
+		//주문 저장
+		Order order = Order.of(member, delivery, Arrays.asList(orderItems));
+		orderRepository.save(order);
+		//판매내역 생성
+		Sale sale = new Sale(order.getOrderDate(), order.getTotalPrice());
+		//주문상품을 판매내역에 저장
+		for (CartItem cartItem : cart.getCartItems()) {
+			Item item = cartItem.getItem();
+			SaleItem saleItem = SaleItem.createSaleItem(sale, item, cartItem.getTotalPrice(), cartItem.getQuantity());
+			sale.addSaleItem(saleItem);
+		}
+		saleRepository.save(sale);
+		//카트 상품 지우기
+		cart.clearItems();
+	}
 
+	//카트 정보 불러오기
+	public CartDto getCart(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new DataNotFoundException("해당 회원이 존재하지 않습니다."));
+		Cart cart = cartRepository.findByMember(member)
+			.orElseThrow(() -> new DataNotFoundException("해당 장바구니가 존재하지 않습니다."));
+		return new CartDto(cart);
+	}
 
-        //주문 항목 생성
-        List<CartItem> cartItems = cart.getCartItems();
-        OrderItem[] orderItems = cartItems.stream()
-                .map(CartItem::toOrderItem)
-                .toArray(OrderItem[]::new);
+	//카트 아이템 삭제
+	public void removeCartItem(Long cartItemId) {
+		CartItem cartItem = cartItemRepository.findById(cartItemId)
+			.orElseThrow(ItemNotFoundException::new);
 
-        //주문 저장
-        Order order = Order.of(member, delivery, Arrays.asList(orderItems));
-        orderRepository.save(order);
-        //판매내역 생성
-        Sale sale = new Sale(order.getOrderDate(), order.getTotalPrice());
-        //주문상품을 판매내역에 저장
-        for (CartItem cartItem : cart.getCartItems()) {
-            Item item = cartItem.getItem();
-            SaleItem saleItem = SaleItem.createSaleItem(sale, item, cartItem.getTotalPrice(), cartItem.getQuantity());
-            sale.addSaleItem(saleItem);
-        }
-        saleRepository.save(sale);
-        //카트 상품 지우기
-        cart.clearItems();
-    }
-
-    //카트 정보 불러오기
-    public CartDto getCart(Long memberId) {
-        Member member = ServiceUtils.getOrThrow(memberRepository.findById(memberId), "존재하지 않는 회원입니다.");
-        Cart cart = ServiceUtils.getOrThrow(cartRepository.findByMember(member), "장바구니가 존재하지 않습니다.");
-        return new CartDto(cart);
-    }
-
-    //카트 아이템 삭제
-    public void removeCartItem(Long cartItemId) {
-        CartItem cartItem = ServiceUtils.getOrThrow(cartItemRepository.findById(cartItemId),"존재하지 않는 상품입니다.");
-
-        Cart cart = cartItem.getCart();
-        cart.removeCartItem(cartItem);
-        cartItemRepository.delete(cartItem);
-    }
+		Cart cart = cartItem.getCart();
+		cart.removeCartItem(cartItem);
+		cartItemRepository.delete(cartItem);
+	}
 }

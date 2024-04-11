@@ -35,11 +35,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 		try {
 			// 로그인 요청 경로
-			String loginPath = "/members/signin";
-			// 현재 요청의 경로
-			String requestPath = request.getRequestURI();
-			// 로그인 요청인 경우, 이 필터의 로직을 건너뛰고 필터 체인을 계속 진행
-			if (requestPath.equals(loginPath)) {
+			String requestURI = request.getRequestURI();
+
+			// 예외 경로에 해당하는 경우 필터 체인을 계속 진행
+			if (requestURI.startsWith("/members/signup") || requestURI.startsWith("/members/signin")
+				|| requestURI.startsWith("/css") || requestURI.startsWith("/image") || requestURI.startsWith("/js")) {
 				filterChain.doFilter(request, response);
 				return;
 			}

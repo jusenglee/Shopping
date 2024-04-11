@@ -1,13 +1,13 @@
 <script setup>
 import {onMounted, ref} from 'vue';
-import axios from "@/axios";
+import api from "@/axios";
 import AdminSideBar from "@/components/AdminSideBar.vue";
 
 const products = ref([]);
 
 // 데이터를 가져오는 함수
 const getItem = () => {
-  axios.get('/admin/ItemManage/sellerItemList')
+  api.get('/admin/ItemManage/sellerItemList')
       .then(response => {
         products.value = response.data;
         console.log(products.value);
@@ -59,7 +59,7 @@ onMounted(getItem);
         <tr v-for="(product, index) in products" :key="product.id">
           <td>{{ index + 1 }}</td>
           <td>
-            <img v-if="product.itemImgs[0]" :src="require(`@/assets/images/${product.itemImgs[0].imgName}`)"
+            <img v-if="product.itemImgs[0]" :src="(`http://localhost:8081${product.itemImgs[0].imgUrl}`)"
                  alt="Illustration" style="width: 50px; height: 50px;">
           </td>
           <td><span :class="getStatusClass(product.itemSellStatus)">{{ product.itemSellStatus }}</span></td>

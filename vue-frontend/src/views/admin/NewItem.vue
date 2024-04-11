@@ -1,12 +1,106 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {computed, getCurrentInstance, onMounted, ref} from 'vue';
 import AdminSideBar from "@/components/AdminSideBar.vue";
-import axios from "@/axios.js";
-import router from "@/router";
+import api from "@/axios.js";
 import {useRoute} from 'vue-router';
+import vueFilePond from "vue-filepond";
+import "filepond/dist/filepond.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import {useStore} from 'vuex';
 
-let url = "/admin/newItem" //상품 등록, 수정에 따른 url 변경을 위한 변수
+const store = useStore();
+const token = computed(() => store.state.userToken);
+const instance = getCurrentInstance();
+const $getCookie = instance.appContext.config.globalProperties.$getCookie;
+// FilePond 플러그인을 사용하여 Vue 컴포넌트 생성
+const FilePond = vueFilePond(
+    FilePondPluginFileValidateType,
+    FilePondPluginImagePreview
+);
+const initialFiles = ref([]); // 초기 파일 목록을 저장할 반응형 데이터
+const pond = ref(null);
 
+// @init 이벤트 핸들러
+function handleFilePondInit() {
+  console.log("FilePond has been initialized.");
+}
+
+// FilePond 설정 객체
+const serverConfig = computed(() => ({
+  process(fieldName, file, metadata, load, error, progress, abort) {
+    const formData = new FormData();
+    formData.append(fieldName, file, file.name);
+
+    // 비동기 요청을 사용하여 파일 업로드를 수행
+    fetch('http://localhost:8081/common/saveImage', {
+      method: 'POST',
+      headers: {
+        // 토큰과 다른 헤더 정보를 설정
+        'Authorization': `Bearer ${token.value}`,
+        'X-XSRF-TOKEN': $getCookie('XSRF-TOKEN')
+      },
+      body: formData,
+    })
+        .then(response => {
+          // HTTP 상태 코드가 200-299 범위인지 확인
+          if (response.ok) {
+            return response.json(); // 서버로부터 반환된 JSON 응답을 파싱
+          }
+          // 응답이 성공적이지 않으면 에러를 던짐
+          throw new Error(response);
+        })
+        .then(data => {
+          console.log(data); // 성공 시 서버 응답을 콘솔에 출력
+          itemData.value.itemImgDtoList.push(data)
+          console.log("itemData.value.itemImgDtoList : ", itemData.value.itemImgDtoList)
+          load(data.imgUrl); // 예시: 서버로부터 반환된 파일 ID를 load 함수에 전달
+        })
+        .catch(err => {
+          console.error('Upload error:', err);
+          error(err.message);
+        });
+
+    // fetch 요청의 취소를 처리하는 로직을 구현
+    return {
+      abort: () => {
+        // 요청 취소 로직 (예: AbortController를 사용하는 경우 abort() 호출)
+        abort();
+      }
+    };
+  },
+  load: async (source, load, error) => {
+    try {
+      console.log("load 호출! ID 번호 : ", source);
+      const response = await api.get(`${source}`, {
+        responseType: 'blob',
+      });
+      load(response.data);
+    } catch (err) {
+      error(err.message);
+    }
+  },
+}));
+
+async function loadProductImages(itemId) {
+  try {
+    const response = await api.get(`/common/loadImage/${itemId}`);
+    initialFiles.value = response.data.map(img => ({
+      source: img.imgUrl, // 예시: img 객체 내의 imgUrl 프로퍼티를 사용
+      options: {
+        name: img.oriImgName,
+        fileName: img.imgName,
+        repimgYn: img.repimgYn,
+        type: 'local',
+      },
+    })); // 반응형 데이터를 업데이트하여 FilePond에 파일을 설정
+  } catch (error) {
+    console.error('Failed to load product images:', error);
+  }
+}
+
+let url = "/admin/newItem" //상cd v품 등록, 수정에 따른 url 변경을 위한 변수
 const itemData = ref({
   itemId: '',
   itemNm: '',
@@ -16,52 +110,29 @@ const itemData = ref({
   category: 1,
   brand: 1,
   itemSellStatus: 'SELL',
-  itemImgFile: [], // 사용자가 선택한 새 파일
-  itemImgDtoList: [], // 이미 저장된 이미지 정보
-  deleteImgIds: []
+  itemImgDtoList: [], // 사용자가 선택한 새 파일
 });
+const errors = ref({});
 const brandList = ref([]);
 const categoriesList = ref([]); // 카테고리 목록을 저장할 반응형 참조
-
-const newImagePreviews = ref([]); //이미지 미리보기 제공을 위한 URL 리스트
-
-const handleFilesUpload = (event) => {
-  itemData.value.itemImgFile = Array.from(event.target.files);
-  newImagePreviews.value = itemData.value.itemImgFile.map(file => URL.createObjectURL(file));
-};
-const removeSavedImage = (imageId) => {
-  itemData.value.deleteImgIds.push(imageId);
-  itemData.value.itemImgDtoList = itemData.value.itemImgDtoList.filter(image => image.id !== imageId);
-};
-
-const removeNewImage = (index) => {
-  // newImagePreviews에서 URL을 제거
-  newImagePreviews.value.splice(index, 1);
-  // 실제 파일 목록에서도 제거
-  itemData.value.itemImgFile.splice(index, 1);
-};
-
-
 // API로부터 브랜드 목록을 가져오는 함수
 const getBrandAndCategories = () => {
-  axios.get('/admin/brands')
+  api.get('/admin/brands')
       .then(response => {
         brandList.value = response.data.map(item => ({
           value: item.id, // API 응답 구조에 따라 조정 필요
           text: item.name // API 응답 구조에 따라 조정 필요
         }));
-        console.log('brandList', brandList);
       })
       .catch(error => {
         console.error('error', error);
       });
-  axios.get('/admin/categories')
+  api.get('/admin/categories')
       .then(response => {
         categoriesList.value = response.data.map(item => ({
           value: item.id, // API 응답 구조에 따라 조정 필요
           text: item.cateName // API 응답 구조에 따라 조정 필요
         }));
-        console.log('categoriesList', categoriesList);
       })
       .catch(error => {
         console.error('error', error);
@@ -70,32 +141,21 @@ const getBrandAndCategories = () => {
 
 // 서버로 상품 데이터를 보내는 함수
 const submitData = () => {
-  const formData = new FormData();
-  // 상품 정보 필드를 formData에 추가
-  formData.append('id', itemData.value.id);
-  formData.append('itemNm', itemData.value.itemNm);
-  formData.append('price', itemData.value.price);
-  formData.append('stockNumber', itemData.value.stockNumber);
-  formData.append('itemDetail', itemData.value.itemDetail);
-  formData.append('itemSellStatus', itemData.value.itemSellStatus);
-  formData.append('category', itemData.value.category);
-  formData.append('brand', itemData.value.brand);
-  itemData.value.itemImgFile.forEach(file => {
-    formData.append('itemImgFile', file);
-  });
-  // 삭제할 이미지 ID를 formData에 추가
-  itemData.value.deleteImgIds.forEach(id => {
-    formData.append('deleteImgIds', id);
-  });
-  axios.post(url, formData, {
+  const itemDataJson = JSON.stringify(itemData.value);
+  console.log(itemDataJson)
+  api.post(url, itemDataJson, {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/json',
     },
   }).then(response => {
     alert(response.data);
-    router.push('/admin/AdminPage');
+    //router.push('/admin/AdminPage');
   }).catch(error => {
-    alert(error);
+    console.log("error : ", error);
+    if (error.request.status == '400') {
+      errors.value = error.response.data;
+      console.log("errors.value : ", errors.value);
+    }
   });
 }
 
@@ -105,16 +165,11 @@ const route = useRoute(); // vue-router 4.x에서 제공하는 useRoute 컴포�
 onMounted(() => {
   const productId = route.params.id; // params에서 직접 접근
   const expectedPath = `/admin/Modified/${productId}`;
-
   if (route.path === expectedPath) {
-    axios.get(`/item/${productId}`)
+    api.get(`/item/${productId}`)
         .then(response => {
           itemData.value = response.data.itemData;
-          if (response.data.itemData.itemImgDtoList && response.data.itemData.itemImgDtoList.length > 0) {
-            newImagePreviews.value = response.data.itemData.itemImgDtoList.map(imgDto => {
-              return require(`@/assets/images/${imgDto.imgName}`);
-            });
-          }
+          loadProductImages(productId);
         }).catch(error => console.error("Fetching item error: ", error));
     url = '/admin/modifyItem/'
   }
@@ -163,52 +218,45 @@ onMounted(() => {
               <label class="form-label" for="itemNm">상품명</label>
               <input id="itemNm" v-model="itemData.itemNm" class="form-control" name="itemNm" placeholder="상품명을 입력해주세요"
                      type="text">
+              <div v-if="errors.itemNm" class="error-message">{{ errors.itemNm }}</div>
             </div>
 
             <div class="col-12">
               <label class="form-label" for="itemDetail">상품 설명</label>
               <input id="itemDetail" v-model="itemData.itemDetail" class="form-control" name="itemDetail"
                      placeholder="상품 설명을 입력하세요." type="text">
+              <div v-if="errors.itemDetail" class="error-message">{{ errors.itemDetail }}</div>
             </div>
 
             <div class="col-12">
               <label class="form-label" for="price">상품 가격</label>
               <input id="price" v-model="itemData.price" class="form-control" name="price" placeholder="상품 가격을 입력하세요."
                      type="number">
+              <div v-if="errors.price" class="error-message">{{ errors.price }}</div>
             </div>
 
             <div class="col-12">
               <label class="form-label" for="stock">상품 재고</label>
               <input id="stock" v-model="itemData.stockNumber" class="form-control" name="stock"
                      placeholder="상품 재고를 입력하세요." type="number">
+              <div v-if="errors.stock" class="error-message">{{ errors.stock }}</div>
             </div>
 
             <div class="col-12">
               <label class="form-label" for="image" style="margin-top: 10px">
                 상품이미지 추가</label>
-              <input id="image" class="form-control" multiple name="itemImgFile" type="file"
-                     @change="handleFilesUpload">
-            </div>
 
-            <!-- 기존 이미지 미리보기 -->
-            <div v-if="itemData.itemImgDtoList && itemData.itemImgDtoList.length > 0" class="image-preview-container">
-              <div v-for="(image) in itemData.itemImgDtoList" :key="`saved-${image.id}`" class="image-preview">
-                <img :alt="image.oriImgName" :src="require(`@/assets/images/${image.imgName}`)"
-                     class="preview-image">
-                <!-- 이미지 삭제 버튼 -->
-                <button @click="removeSavedImage(image.id)">삭제</button>
-              </div>
+              <FilePond
+                  ref="pond"
+                  :files="initialFiles"
+                  :server="serverConfig"
+                  accepted-file-types="image/jpeg, image/png"
+                  allow-multiple="true"
+                  label-idle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+                  @init="handleFilePondInit"
+              />
+              <div v-if="errors.itemImgDtoList" class="error-message">{{ errors.itemImgDtoList }}</div>
             </div>
-
-            <!-- 새 이미지 미리보기 -->
-            <div v-if="newImagePreviews && newImagePreviews.length > 0" class="new-image-preview-container">
-              <div v-for="(imageSrc, index) in newImagePreviews" :key="`new-${index}`" class="image-preview">
-                <img :src="imageSrc" class="preview-image">
-                <!-- 새 이미지 삭제 버튼 (옵션) -->
-                <button @click="removeNewImage(index)">삭제</button>
-              </div>
-            </div>
-
 
           </div>
           <hr class="my-4">

@@ -15,11 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.weblogin.config.Exception.ServiceUtils;
+import com.example.weblogin.config.Exception.DataNotFoundException;
+import com.example.weblogin.config.Exception.ItemNotFoundException;
 import com.example.weblogin.domain.DTO.ItemFormDto;
-import com.example.weblogin.domain.DTO.ItemImgDto;
-import com.example.weblogin.domain.ItemImg.ItemImg;
-import com.example.weblogin.domain.ItemImg.ItemImgRepository;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
 import com.example.weblogin.domain.itemCategory.Brand;
@@ -38,8 +36,6 @@ import lombok.RequiredArgsConstructor;
 public class ItemService {
 
 	private final ItemRepository itemRepository;
-	private final ItemImgService itemImgService;
-	private final ItemImgRepository itemImgRepository;
 
 	private final OrderItemRepository orderItemRepository;
 
@@ -47,7 +43,22 @@ public class ItemService {
 	private final CategorieRepository categorieRepository;
 	private final BrandRepository brandRepository;
 
-	public void saveItem(@ModelAttribute ItemFormDto itemFormDto) throws Exception {
+	// 상품 저장 후 ID 반환
+	public Long saveItem(Item item) {
+		Item savedItem = itemRepository.save(item);
+		return savedItem.getId(); // 저장된 상품의 ID 반환
+	}
+
+	/**
+	 * 상품 존재여부 확인
+	 * @param itemId
+	 */
+	public void validateItemExists(Long itemId) {
+		itemRepository.findById(itemId)
+			.orElseThrow(() -> new ItemNotFoundException("Product not found with id: " + itemId));
+	}
+
+	public Long saveItem(@ModelAttribute ItemFormDto itemFormDto) throws Exception {
 		try {
 			Categorie category = categorieRepository.findCategorieById(itemFormDto.getCategory())
 				.orElseThrow(() -> new EntityNotFoundException("Category not found"));
@@ -65,35 +76,17 @@ public class ItemService {
 			item.setCountview(0); // 초기 조회수 0
 			item.setHeart(0);
 			item.setAdmin(itemFormDto.getAdmin());
-			itemRepository.save(item);
-			//이미지 등록
-			for (int i = 0, max = itemFormDto.getItemImgFile().size(); i < max; i++) {
-				ItemImg itemImg = ItemImg.builder().item(item).repimgYn(i == 0 ? "Y" : "N").build();
-				itemImgService.saveItemImg(itemImg, itemFormDto.getItemImgFile().get(i));
-			}
+			return saveItem(item);
 		} catch (Exception e) {
 			final Exception e1 = e;
 			e1.printStackTrace();
 		}
+		return null;
 	}
 
 	// 상품정보 가져오기
 	@Transactional(readOnly = true)
 	public ItemFormDto getItemDetail(Long itemId) {
-
-		List<ItemImg> itemImgList = itemImgRepository.findByItemIdOrderByIdAsc(itemId);
-		List<ItemImgDto> itemImgDtoList = new ArrayList<>();
-
-		for (ItemImg itemImg : itemImgList) {
-			ItemImgDto itemImgDto = ItemImgDto.builder()
-				.id(itemImg.getId())
-				.imgName(itemImg.getImgName())
-				.oriImgName(itemImg.getOriImgName())
-				.imgUrl(itemImg.getImgUrl())
-				.repImgYn(itemImg.getRepimgYn())
-				.build();
-			itemImgDtoList.add(itemImgDto);
-		}
 
 		Item item = itemRepository.findById(itemId)
 			.orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. ID: " + itemId));
@@ -110,7 +103,6 @@ public class ItemService {
 			.stockNumber(item.getStockNumber())
 			.countview(item.getCountview())
 			.heart(item.getHeart())
-			.itemImgDtoList(itemImgDtoList)
 			.build();
 	}
 
@@ -133,18 +125,27 @@ public class ItemService {
 	//상품 삭제
 	@Transactional
 	public void deleteItem(Long itemId) {
-		Item item = itemRepository.findById(itemId).orElseThrow(() -> new ServiceUtils(String.valueOf(itemId)));
+		// 상품 조회 및 예외 처리
+		Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
+
+		// 재고 확인
 		if (item.getStockNumber() > 0) {
-			throw new ServiceUtils("cannot delete item because it is still in stock");
+			throw new DataNotFoundException("재고가 남아 있는 상품은 삭제할 수 없습니다. ID: " + itemId);
 		}
+
+		// 주문 항목 확인
 		List<OrderItem> orderItems = orderItemRepository.findByItemId(itemId);
 		if (!orderItems.isEmpty()) {
-			throw new ServiceUtils("cannot delete item because it is included in orders");
+			throw new DataNotFoundException("이미 주문된 상품은 삭제할 수 없습니다. ID: " + itemId);
 		}
+
+		// 판매 항목 확인
 		List<SaleItem> saleItems = saleItemRepository.findByItem(itemId);
 		if (!saleItems.isEmpty()) {
-			throw new ServiceUtils("cannot delete item because it is included in sales");
+			throw new DataNotFoundException("판매 항목에 등록된 상품은 삭제할 수 없습니다. ID: " + itemId);
 		}
+
+		// 상품 삭제
 		itemRepository.delete(item);
 	}
 

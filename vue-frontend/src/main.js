@@ -10,6 +10,17 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import VueCookies from 'vue-cookies';
 import dateFormatter from './plugins/dateFormatter';
 
+// Import FilePond styles
+import "filepond/dist/filepond.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 
+const app = createApp(App);
+// Vue 3 방식으로 전역 메소드 추가
+app.config.globalProperties.$getCookie = function (name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 // 앱 인스턴스를 생성하고 라우터를 사용하도록 설정합니다.
-createApp(App).use(dateFormatter).use(router).use(VueCookies).use(store).mount('#app');
+app.use(dateFormatter).use(router).use(VueCookies).use(store).mount('#app');
+

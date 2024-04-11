@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,12 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.domain.DTO.SaleInfo;
+import com.example.weblogin.domain.ItemImg.ItemImg;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.BrandRepository;
 import com.example.weblogin.domain.itemCategory.Categorie;
 import com.example.weblogin.domain.itemCategory.CategorieRepository;
 import com.example.weblogin.domain.member.Member;
+import com.example.weblogin.service.ItemImgService;
 import com.example.weblogin.service.ItemService;
 import com.example.weblogin.service.MemberService;
 import com.example.weblogin.service.SaleService;
@@ -37,6 +39,7 @@ public class RestAdminController {
 
 	private final SaleService saleService;
 	private final ItemService itemService;
+	private final ItemImgService itemImgService;
 	private final CategorieRepository categorieRepository;
 	private final BrandRepository brandRepository;
 
@@ -50,14 +53,26 @@ public class RestAdminController {
 		return brandRepository.findAll();
 	}
 
+	/**
+	 *  상품 등록
+	 * @param itemFormDto 상품정보
+	 * @return ResponseEntity
+	 * @throws Exception 예외처리
+	 */
 	// 상품 등록
 	@PostMapping("/newItem")
-	public ResponseEntity<?> itemSave(@ModelAttribute @Valid ItemFormDto itemFormDto) throws Exception {
+	public ResponseEntity<?> itemSave(@RequestBody @Valid ItemFormDto itemFormDto) throws Exception {
 		Member member = MemberService.getCurrentUserMember();
 		try {
 			itemFormDto.setAdmin(member);
-			itemService.saveItem(itemFormDto);
-			return new ResponseEntity<>("상품 등록 완료", HttpStatus.OK);
+			Long itemId = itemService.saveItem(itemFormDto);
+			List<ItemImg> itemImgDtoList = itemFormDto.getItemImgDtoList();
+			if (itemId != null && !itemImgDtoList.isEmpty()) {
+				for (ItemImg itemImg : itemImgDtoList) {
+					itemImgService.addImageToItem(itemId, itemImg); // 이미지 - 아이템 매핑
+				}
+			}
+			return ResponseEntity.ok("상품 등록 완료");
 		} catch (Exception e) {
 			return new ResponseEntity<>("상품 등록 실패. 다시 시도해주세요", HttpStatus.INTERNAL_SERVER_ERROR);
 		}

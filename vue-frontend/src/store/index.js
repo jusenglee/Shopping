@@ -33,6 +33,7 @@ export default createStore({
             localStorage.removeItem('user-token');
             localStorage.removeItem('userInfo');
         },
+
     },
     plugins: [createPersistedState({
         paths: ['userToken', 'userInfo'], // 영속화할 상태 지정

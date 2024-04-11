@@ -165,3 +165,8 @@ button a {
     color: #fff;
     background-color: #2196F3; /* Blue */
 }
+
+.error-message {
+    color: red;
+    margin-top: 5px;
+}
