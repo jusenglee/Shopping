@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.weblogin.config.Exception.DataNotFoundException;
 import com.example.weblogin.config.Exception.ItemNotFoundException;
@@ -24,9 +21,7 @@ import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.BrandRepository;
 import com.example.weblogin.domain.itemCategory.Categorie;
 import com.example.weblogin.domain.itemCategory.CategorieRepository;
-import com.example.weblogin.domain.orderItem.OrderItem;
 import com.example.weblogin.domain.orderItem.OrderItemRepository;
-import com.example.weblogin.domain.saleitem.SaleItem;
 import com.example.weblogin.domain.saleitem.SaleItemRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -43,40 +38,27 @@ public class ItemService {
 	private final CategorieRepository categorieRepository;
 	private final BrandRepository brandRepository;
 
-	// 상품 저장 후 ID 반환
-	public Long saveItem(Item item) {
-		Item savedItem = itemRepository.save(item);
-		return savedItem.getId(); // 저장된 상품의 ID 반환
-	}
-
-	/**
-	 * 상품 존재여부 확인
-	 * @param itemId
-	 */
-	public void validateItemExists(Long itemId) {
-		itemRepository.findById(itemId)
-			.orElseThrow(() -> new ItemNotFoundException("Product not found with id: " + itemId));
-	}
-
-	public Long saveItem(@ModelAttribute ItemFormDto itemFormDto) throws Exception {
+	@Transactional
+	public Long saveItem(@ModelAttribute ItemFormDto itemFormDto) {
 		try {
 			Categorie category = categorieRepository.findCategorieById(itemFormDto.getCategory())
-				.orElseThrow(() -> new EntityNotFoundException("Category not found"));
+				.orElseThrow(() -> new DataNotFoundException("카테고리 정보를 찾을 수 없습니다."));
 			Brand brand = brandRepository.findBrandById(itemFormDto.getBrand())
-				.orElseThrow(() -> new EntityNotFoundException("Brand not found"));
+				.orElseThrow(() -> new DataNotFoundException("브랜드 정보를 찾을 수 없습니다. "));
 
 			Item item = new Item();
 			item.setItemNm(itemFormDto.getItemNm());
 			item.setItemDetail(itemFormDto.getItemDetail());
 			item.setItemSellStatus(itemFormDto.getItemSellStatus());
 			item.setPrice(itemFormDto.getPrice());
-			item.setStockNumber(itemFormDto.getStockNumber());
+			item.setInventory(itemFormDto.getInventory());
 			item.setCategory(category);
 			item.setBrand(brand);
 			item.setCountview(0); // 초기 조회수 0
 			item.setHeart(0);
 			item.setAdmin(itemFormDto.getAdmin());
-			return saveItem(item);
+			itemRepository.save(item);
+			return item.getId();
 		} catch (Exception e) {
 			final Exception e1 = e;
 			e1.printStackTrace();
@@ -87,10 +69,8 @@ public class ItemService {
 	// 상품정보 가져오기
 	@Transactional(readOnly = true)
 	public ItemFormDto getItemDetail(Long itemId) {
-
 		Item item = itemRepository.findById(itemId)
-			.orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. ID: " + itemId));
-
+			.orElseThrow(ItemNotFoundException::new);
 		return ItemFormDto.builder()
 			.id(item.getId())
 			.category(item.getCategory().getId())
@@ -100,7 +80,8 @@ public class ItemService {
 			.itemDetail(item.getItemDetail())
 			.itemSellStatus(item.getItemSellStatus())
 			.price(item.getPrice())
-			.stockNumber(item.getStockNumber())
+			.inventory(item.getInventory())
+			.itemImgDtoList(item.getItemImgs())
 			.countview(item.getCountview())
 			.heart(item.getHeart())
 			.build();
@@ -108,45 +89,9 @@ public class ItemService {
 
 	// 상품 수정
 	@Transactional
-	public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
-
-		//상품 수정
-		Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(EntityNotFoundException::new);
+	public void updateItem(ItemFormDto itemFormDto) {
+		Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(ItemNotFoundException::new);
 		item.updateItem(itemFormDto);
-
-		//이미지 등록
-		// for (int i = 0, max = itemImgFileList.size(); i < max; i++) {
-		// 	itemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
-		// }
-
-		return item.getId();
-	}
-
-	//상품 삭제
-	@Transactional
-	public void deleteItem(Long itemId) {
-		// 상품 조회 및 예외 처리
-		Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
-
-		// 재고 확인
-		if (item.getStockNumber() > 0) {
-			throw new DataNotFoundException("재고가 남아 있는 상품은 삭제할 수 없습니다. ID: " + itemId);
-		}
-
-		// 주문 항목 확인
-		List<OrderItem> orderItems = orderItemRepository.findByItemId(itemId);
-		if (!orderItems.isEmpty()) {
-			throw new DataNotFoundException("이미 주문된 상품은 삭제할 수 없습니다. ID: " + itemId);
-		}
-
-		// 판매 항목 확인
-		List<SaleItem> saleItems = saleItemRepository.findByItem(itemId);
-		if (!saleItems.isEmpty()) {
-			throw new DataNotFoundException("판매 항목에 등록된 상품은 삭제할 수 없습니다. ID: " + itemId);
-		}
-
-		// 상품 삭제
-		itemRepository.delete(item);
 	}
 
 	@Transactional

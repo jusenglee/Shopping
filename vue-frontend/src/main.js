@@ -4,6 +4,8 @@ import App from "@/App.vue";
 import store from './store';
 import './assets/css/styles.css';
 import './assets/css/mainCss.css';
+import './assets/css/switch.css';
+import './assets/css/button.css';
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'

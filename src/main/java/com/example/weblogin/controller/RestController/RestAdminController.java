@@ -6,15 +6,12 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.domain.DTO.SaleInfo;
@@ -100,23 +97,13 @@ public class RestAdminController {
 
 	//상품 수정
 	@PostMapping("/modifyItem")
-	public ResponseEntity<?> updateItem(@Valid ItemFormDto itemFormDto,
-		@RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
-		if (itemImgFileList.get(0).isEmpty() && itemFormDto.getId() == null) {
-			return new ResponseEntity<>("최소 1개의 상품 이미지가 필요합니다.", HttpStatus.BAD_REQUEST);
-		}
+	public ResponseEntity<?> updateItem(@RequestBody @Valid ItemFormDto itemFormDto) {
 		try {
-			itemService.updateItem(itemFormDto, itemImgFileList);
+			itemService.updateItem(itemFormDto);
+			return new ResponseEntity<>("상품 수정 완료.", HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>("상품 등록에 실패했습니다. 다시 시도해주세요", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>("상품 수정에 실패했습니다. 다시 시도해주세요", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<>("최소 1개의 상품 이미지가 필요합니다.", HttpStatus.BAD_REQUEST);
-	}
-
-	//상품 삭제 (중지 ->)
-	@DeleteMapping("/manage/delete/{itemId}")
-	public void stopSellingItem(@PathVariable("itemId") Long id) {
-		itemService.deleteItem(id);
 	}
 
 }

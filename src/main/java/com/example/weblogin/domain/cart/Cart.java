@@ -68,15 +68,10 @@ public class Cart extends BaseEntity {
 			cartItems.add(cartItem);
 		}
 
-		item.decreaseStockQuantity(quantity);
 	}
 
 	//카트에서 모든 상품을 삭제
 	public void clearItems() {
-		for (CartItem cartItem : cartItems) {
-			cartItem.cancel();
-		}
-		cartItems.clear();
 	}
 
 	//카트에 담긴 모든 상품을 주문하는 메서드

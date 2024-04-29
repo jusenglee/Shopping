@@ -7,10 +7,8 @@ const routes = [{
     path: '/main', name: 'Home2', component: () => import('@/views/MainPage.vue') // Lazy load 방식
 }, {
     path: '/members/signin', name: 'signin', component: () => import('@/views/LoginPage.vue'), // Lazy load 방식
-    meta: {hideFooter: true}
 }, {
     path: '/members/signup', name: 'signup', component: () => import('@/views/LoginPage.vue'), // Lazy load 방식
-    meta: {hideFooter: true}
 }, {
     path: '/admin/AdminPage', component: () => import('@/views/admin/AdminPage.vue'), name: 'AdminPage'
 }, {path: '/admin/NewItem', component: () => import('@/views/admin/NewItem.vue'), name: 'NewItem'}, {

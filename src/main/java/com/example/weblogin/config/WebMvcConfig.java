@@ -12,6 +12,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	@Value("${uploadPath}")
 	String uploadPath;
 
+	/**
+	 * 외부 8081 포트 요청 허용
+	 * @param registry
+	 */
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**") // 모든 경로에 대해
@@ -20,6 +24,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 			.allowCredentials(true); // 쿠키 및 인증 정보를 포함한 요청 허용
 	}
 
+	/**
+	 * 외부에서 특정 폴더 이미지 접근 허용
+	 * @param registry
+	 */
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/image/**")

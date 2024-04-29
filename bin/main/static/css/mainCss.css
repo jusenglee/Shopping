@@ -4,6 +4,7 @@
     margin: 0 auto;
     padding: 20px;
 }
+
 /* 사이드바 전체를 감싸는 컨테이너 */
 .page-container {
     display: flex;
@@ -17,8 +18,9 @@
     display: flex;
     flex: 1; /* 나머지 공간을 모두 채움 */
 }
-.main-content{
-    flex: 1;
+
+.main-content {
+    flex: 2;
     margin: 20px;
     padding: 20px;
 }
@@ -26,6 +28,12 @@
 
 /* 사이드바 스타일 변경 */
 .sidebar {
+    position: fixed;
+    top: 10px; /* 화면의 상단과 맞춤 */
+    right: 0; /* 화면의 오른쪽과 맞춤 */
+    height: 50%; /* 전체 높이 */
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤바 표시 */
+    border-left: 1px solid #ccc; /* 왼쪽 테두리 */
     /* float: left; 제거 */
     width: 220px;
     background: #f8f9fa;
@@ -94,6 +102,7 @@
     justify-content: center; /* 이미지를 가운데 정렬 */
     align-items: flex-end; /* 이미지를 아래쪽에 정렬 */
 }
+
 .card .illustration img {
     max-width: 100%;
     height: auto;
@@ -107,30 +116,36 @@ ul .active {
 }
 
 button a {
-    color: #ffffff; !important;
-    text-decoration-line:none;
+    color: #ffffff;
+!important;
+    text-decoration-line: none;
     font-weight: bold;
 }
+
 /* 상품관리에 사용 할 스타일 */
-.thead-light{
+.thead-light {
     background-color: #fff;
     border-bottom-color: rgba(135, 135, 135, 0.52);
     border-style: solid;
-    border-bottom-width : 2px;
+    border-bottom-width: 2px;
 }
+
 .badge-sale {
-          color: #fff;
-          background-color: #f44336; /* Red */
-      }
-      .badge-new {
-          color: #fff;
-          background-color: #4CAF50; /* Green */
-      }
-      .badge-hot {
-          color: #fff;
-          background-color: #ff9800; /* Orange */
-      }
-      .badge-top {
-          color: #fff;
-          background-color: #2196F3; /* Blue */
-      }
+    color: #fff;
+    background-color: #f44336; /* Red */
+}
+
+.badge-new {
+    color: #fff;
+    background-color: #4CAF50; /* Green */
+}
+
+.badge-hot {
+    color: #fff;
+    background-color: #ff9800; /* Orange */
+}
+
+.badge-top {
+    color: #fff;
+    background-color: #2196F3; /* Blue */
+}

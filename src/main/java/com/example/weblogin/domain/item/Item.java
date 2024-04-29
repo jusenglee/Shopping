@@ -1,8 +1,12 @@
 package com.example.weblogin.domain.item;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 
 import com.example.weblogin.config.baseEntity.BaseEntity;
@@ -20,6 +25,7 @@ import com.example.weblogin.domain.DTO.ItemFormDto;
 import com.example.weblogin.domain.ItemImg.ItemImg;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.Categorie;
+import com.example.weblogin.domain.itemFabric.ItemFabric;
 import com.example.weblogin.domain.member.Member;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -44,8 +50,15 @@ public class Item extends BaseEntity {
 	@Column(name = "price", nullable = false)
 	private Integer price;  //가격
 
-	@Column(nullable = false)
-	private Integer stockNumber;  //재고수량
+	@Column(name = "sale_per", nullable = false)
+	private Integer salePer;  //할인률
+
+	// 사이즈별 재고를 나타내는 Map 컬렉션
+	@ElementCollection
+	@CollectionTable(name = "item_inventory", joinColumns = @JoinColumn(name = "item_id"))
+	@MapKeyColumn(name = "size")
+	@Column(name = "stock")
+	private Map<String, Integer> inventory = new HashMap<>();
 
 	@Lob
 	@Column(nullable = false)
@@ -62,8 +75,11 @@ public class Item extends BaseEntity {
 	@JoinColumn(name = "brand_id")
 	private Brand brand;    //브랜드 번호
 
-	@Column(columnDefinition = "integer default 0", nullable = false)//조회수 jh
-	//본래 @ManyToMany 다대다 관계의 경우 그대로 사용하지 못하고 반드시 정규화를 통해 중간 테이블을 만들어줘야 합니다. dltmdwn00
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "fabric_id")
+	private ItemFabric fabric;    // 소재
+
+	@Column(columnDefinition = "integer default 0", nullable = false)
 	private Integer heart; // 조회수
 
 	@Column(columnDefinition = "integer default 0", nullable = false)
@@ -84,37 +100,38 @@ public class Item extends BaseEntity {
 	public void updateItem(ItemFormDto itemFormDto) {
 		this.itemNm = itemFormDto.getItemNm();
 		this.price = itemFormDto.getPrice();
-		this.stockNumber = itemFormDto.getStockNumber();
+		this.inventory = itemFormDto.getInventory();
 		this.itemDetail = itemFormDto.getItemDetail();
 		this.itemSellStatus = itemFormDto.getItemSellStatus();
 	}
 
 	/**
 	 * 상품 주문 취소시에 재고를 원래대로 돌려놓는 메소드
-	 * @param quantity 변화되는 재고숫자
+	 * @param size 상품의 사이즈
+	 * @param quantity 변화되는 재고 숫자
 	 */
-	public void addStockQuantity(Integer quantity) {
-		this.stockNumber += quantity;
+	public void addStockQuantity(String size, Integer quantity) {
+		if (inventory.containsKey(size)) {
+			Integer currentStock = inventory.get(size);
+			inventory.put(size, currentStock + quantity);
+		} else {
+			throw new IllegalArgumentException("Invalid size: " + size);
+		}
 	}
 
 	/**
 	 * 상품 주문이 생길경우 해당 상품의 재고수를 감소시킴
 	 * @param quantity 변화되는 재고숫자
 	 */
-	public void removeStockQuantity(Integer quantity) {
-		Integer restStockQuantity = this.stockNumber - quantity;
-		if (restStockQuantity < 0) {
-			throw new IllegalStateException("need more stock");
+	public void removeStockQuantity(String size, Integer quantity) {
+		if (inventory.containsKey(size)) {
+			Integer currentStock = inventory.get(size);
+			if (currentStock < 0) {
+				throw new IllegalStateException("재고가 부족합니다.");
+			} else {
+				inventory.put(size, currentStock - quantity);
+			}
 		}
-		this.stockNumber = restStockQuantity;
-	}
-
-	public void decreaseStockQuantity(Integer quantity) {
-		Integer restStock = this.stockNumber - quantity;
-		if (restStock < 0) {
-			throw new IllegalStateException("need more stock");
-		}
-		this.stockNumber = restStock;
 	}
 
 	/**

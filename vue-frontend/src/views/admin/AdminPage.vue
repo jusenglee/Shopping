@@ -19,9 +19,11 @@ import AdminSideBar from "@/components/AdminSideBar.vue";
           </div>
           <div class="row" style="width: 100%">
             <div class="col">
-              <button class="btn btn-primary" type="button">
-                <router-link to="/admin/NewItem">상품 등록 바로가기</router-link>
-              </button>
+
+              <router-link class="button button--saqui button--round-l button--text-thick"
+                           to="/admin/NewItem" type="button">
+                상품 등록하러 가기
+              </router-link>
             </div>
             <div class="col">
               <div class="illustration">
@@ -39,9 +41,10 @@ import AdminSideBar from "@/components/AdminSideBar.vue";
           </div>
           <div class="row" style="width: 100%">
             <div class="col">
-              <button class="btn btn-primary" type="button">
-                <router-link to="/admin/ItemManage">상품 관리 바로가기</router-link>
-              </button>
+              <router-link class="button button--saqui button--round-l button--text-thick"
+                           to="/admin/ItemManage" type="button">
+                상품 목록으로 가기
+              </router-link>
             </div>
             <div class="col">
               <div class="illustration">
@@ -59,9 +62,10 @@ import AdminSideBar from "@/components/AdminSideBar.vue";
           </div>
           <div class="row" style="width: 100%">
             <div class="col">
-              <button class="btn btn-primary" type="button">
-                <router-link to="/admin/AdminModify">개인정보 수정</router-link>
-              </button>
+              <router-link class="button button--saqui button--round-l button--text-thick"
+                           to="/admin/AdminModify" type="button">
+                판매 정보로 가기
+              </router-link>
             </div>
             <div class="col">
               <div class="illustration">
@@ -77,10 +81,12 @@ import AdminSideBar from "@/components/AdminSideBar.vue";
           </div>
           <div class="row" style="width: 100%">
             <div class="col">
-              <button class="btn btn-primary" type="button">
-                <router-link to="/admin/ItemManage">상품 관리 바로가기</router-link>
-              </button>
+              <router-link class="button button--saqui button--round-l button--text-thick"
+                           to="/admin/ItemManage" type="button">
+                판매 현황으로 가기
+              </router-link>
             </div>
+            col-1 button button--pipaluk button--inverted button--round-s button--text-thick
             <div class="col">
               <div class="illustration">
                 <div class="illustration">

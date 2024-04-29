@@ -1,6 +1,8 @@
 package com.example.weblogin.domain.DTO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -29,7 +31,7 @@ public class ItemFormDto {
 	@NotBlank(message = "상세 내용은 필수 입력 값입니다.")
 	private String itemDetail;
 	@NotNull(message = "재고는 필수 입력 값입니다. ")
-	private Integer stockNumber;
+	private Map<String, Integer> inventory = new HashMap<>();
 	private Member admin;
 	@NotNull(message = "상품 상태는 필수 입력 값입니다. ")
 	private ItemSellStatus itemSellStatus;
@@ -40,7 +42,7 @@ public class ItemFormDto {
 
 	@Builder
 	public ItemFormDto(Long id, Long category, Long brand, String itemNm, Integer price, String itemDetail,
-		Integer stockNumber, Member admin, ItemSellStatus itemSellStatus, List<ItemImg> itemImgDtoList,
+		Map<String, Integer> inventory, Member admin, ItemSellStatus itemSellStatus, List<ItemImg> itemImgDtoList,
 		Integer countview, Integer heart) {
 		this.id = id;
 		this.category = category;
@@ -48,7 +50,7 @@ public class ItemFormDto {
 		this.itemNm = itemNm;
 		this.price = price;
 		this.itemDetail = itemDetail;
-		this.stockNumber = stockNumber;
+		this.inventory = inventory;
 		this.admin = admin;
 		this.itemSellStatus = itemSellStatus;
 		this.itemImgDtoList = itemImgDtoList;

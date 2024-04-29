@@ -4,8 +4,10 @@
          class="signin-wrapper form">
       <div class="form-wrapper">
         <h5>Welcome Back 👊</h5>
-        <input id="email" v-model="credentials.email" class="form-field" placeholder="Email" type="text"/>
-        <input id="password" v-model="credentials.password" class="form-field" placeholder="Password" type="password"/>
+        <input id="email" v-model="credentials.email" class="form-field" placeholder="Email" type="text"
+               @keyup.enter="signIn"/>
+        <input id="password" v-model="credentials.password" class="form-field" placeholder="Password" type="password"
+               @keyup.enter="signIn"/>
         <button class="button primary" @click="signIn">Sign In</button>
         <button class="button secondary" @click="toggleForm">Sign Up</button>
         <p>
@@ -112,16 +114,14 @@ export default {
     signUp() {
       axios({
         method: 'post',
-        url: '/members/signin', // 스프링 시큐리티 회원가입 URL
+        url: '/members/signup', // 스프링 시큐리티 회원가입 URL
         data: this.userInfo,
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
       }).then(response => {
-        console.error('Login response', response);
-      })
-          .catch(error => {
-            // 로그인 실패 시의 처리 로직
-            console.error('회원가입 error', error);
-          });
+        alert(response.data, this.toggleForm());
+      }).catch(error => {
+        // 로그인 실패 시의 처리 로직
+        console.error('회원가입 error', error);
+      });
     },
   },
 };

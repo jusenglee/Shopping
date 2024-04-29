@@ -1,9 +1,9 @@
 // src/App.vue
 <template>
   <div id="app">
-    <AppHeader v-if="!$route.meta.hideHeade"/>
+    <AppHeader/>
     <router-view/>
-    <AppFooter v-if="!$route.meta.hideFooter"/>
+    <AppFooter/>
   </div>
 </template>
 

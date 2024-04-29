@@ -75,10 +75,6 @@ public class CartItem extends BaseEntity {
 		return getItem().getPrice() * getQuantity();
 	}
 
-	public void cancel() {
-		getItem().addStockQuantity(quantity);
-	}
-
 	public OrderItem toOrderItem() {
 		return OrderItem.createOrderItem(item, item.getPrice(), quantity);
 	}

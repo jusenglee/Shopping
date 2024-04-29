@@ -71,13 +71,13 @@ function logOut() {
               </button>
               <ul id="mberNemu" aria-labelledby="dropdownMenuButton" class="dropdown-menu">
                 <li v-if="userInfo.role === 'ROLE_ADMIN'">
-                  <router-link class="dropdown-item" to="admin/AdminPage">판매자페이지</router-link>
+                  <router-link class="dropdown-item" to="/admin/AdminPage">판매자페이지</router-link>
                 </li>
                 <li v-if="userInfo.role === 'ROLE_ADMIN'">
-                  <router-link class="dropdown-item" to="admin/ItemManage">상품관리</router-link>
+                  <router-link class="dropdown-item" to="/admin/ItemManage">상품관리</router-link>
                 </li>
                 <li v-if="userInfo.role === 'ROLE_ADMIN'">
-                  <router-link class="dropdown-item" to="admin/SaleList">판매내역</router-link>
+                  <router-link class="dropdown-item" to="/admin/SaleList">판매내역</router-link>
                 </li>
                 <li v-if="userInfo.role === 'ROLE_USER'"><a class="dropdown-item" href="/user/myPage">마이페이지</a></li>
                 <li v-if="userInfo.role === 'ROLE_USER'"><a class="dropdown-item" href="/user/cart">장바구니</a></li>
