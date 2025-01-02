@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.weblogin.domain.DTO.MemberFormDto;
+import com.example.weblogin.domain.DTO.MemberCreateRequest;
 import com.example.weblogin.domain.member.Member;
 import com.example.weblogin.service.MemberService;
 
@@ -25,12 +25,12 @@ public class AuthController {
 	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/signup")
-	public ResponseEntity<?> signup(@RequestBody @Valid MemberFormDto memberFormDto, BindingResult bindingResult) {
+	public ResponseEntity<?> signup(@RequestBody @Valid MemberCreateRequest memberCreateRequest, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>("회원 가입 항목을 다시 확인해주세요", HttpStatus.UNAUTHORIZED);
 		}
 		try {
-			Member member = Member.createMember(memberFormDto, passwordEncoder);
+			Member member = Member.createMember(memberCreateRequest, passwordEncoder);
 			memberService.saveMember(member);
 		} catch (IllegalStateException e) {
 			return new ResponseEntity<>(e, HttpStatus.INTERNAL_SERVER_ERROR);

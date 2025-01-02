@@ -13,10 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.example.weblogin.domain.DTO.ItemSearchRequestDTO;
-import com.example.weblogin.domain.DTO.MainItemDto;
-import com.example.weblogin.domain.DTO.QMainItemDto;
-import com.example.weblogin.domain.ItemImg.QItemImg;
+import com.example.weblogin.domain.DTO.ItemSearchRequest;
+import com.example.weblogin.domain.DTO.ItemResponse;
+import com.example.weblogin.domain.DTO.QItemResponse;
+import com.example.weblogin.domain.itemImg.QItemImg;
 import com.example.weblogin.domain.itemCategory.QBrand;
 import com.example.weblogin.domain.itemCategory.QCategorie;
 import com.querydsl.core.BooleanBuilder;
@@ -30,7 +30,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 	private EntityManager entityManager;
 
 	@Override
-	public Page<MainItemDto> search(ItemSearchRequestDTO request) {
+	public Page<ItemResponse> search(ItemSearchRequest request) {
 		QItem item = QItem.item;
 		QCategorie categorie = QCategorie.categorie;
 		QItemImg itemImg = QItemImg.itemImg;
@@ -70,8 +70,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 		}
 
 		Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-		JPAQuery<MainItemDto> query = new JPAQuery<>(entityManager);
-		query.select(new QMainItemDto(
+		JPAQuery<ItemResponse> query = new JPAQuery<>(entityManager);
+		query.select(new QItemResponse(
 				item.id,
 				item.itemNm,
 				item.itemDetail,
@@ -91,8 +91,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize());
 
-		List<MainItemDto> mainItemDto = query.fetch();
+		List<ItemResponse> itemResponse = query.fetch();
 		long totalCount = query.fetchCount();
-		return new PageImpl<>(mainItemDto, pageable, totalCount);
+		return new PageImpl<>(itemResponse, pageable, totalCount);
 	}
 }

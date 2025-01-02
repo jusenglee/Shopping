@@ -1,4 +1,4 @@
-package com.example.weblogin.domain.ItemImg;
+package com.example.weblogin.domain.itemImg;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

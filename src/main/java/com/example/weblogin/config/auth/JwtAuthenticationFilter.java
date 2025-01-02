@@ -52,7 +52,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					userDetails, null, userDetails.getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} else {
-				throw new ServletException("Invalid token");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				response.setContentType("application/json;charset=UTF-8");
+				response.getWriter().write("{\"message\": \"Invalid token\"}");
+				return;
 			}
 		} catch (Exception ex) {
 			throw new ServletException("Invalid token");

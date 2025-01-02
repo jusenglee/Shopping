@@ -24,8 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.weblogin.config.Exception.DataNotFoundException;
 import com.example.weblogin.config.Exception.ItemNotFoundException;
-import com.example.weblogin.domain.ItemImg.ItemImg;
-import com.example.weblogin.domain.ItemImg.ItemImgRepository;
+import com.example.weblogin.domain.itemImg.ItemImg;
+import com.example.weblogin.domain.itemImg.ItemImgRepository;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.example.weblogin.config.Exception.DataNotFoundException;
 import com.example.weblogin.config.Exception.ItemNotFoundException;
-import com.example.weblogin.domain.DTO.ItemFormDto;
+import com.example.weblogin.domain.DTO.ItemCreateRequest;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
 import com.example.weblogin.domain.itemCategory.Brand;
@@ -39,24 +39,14 @@ public class ItemService {
 	private final BrandRepository brandRepository;
 
 	@Transactional
-	public Long saveItem(@ModelAttribute ItemFormDto itemFormDto) {
+	public Long saveItem(@ModelAttribute ItemCreateRequest itemFormDto) {
 		try {
 			Categorie category = categorieRepository.findCategorieById(itemFormDto.getCategory())
 				.orElseThrow(() -> new DataNotFoundException("카테고리 정보를 찾을 수 없습니다."));
 			Brand brand = brandRepository.findBrandById(itemFormDto.getBrand())
 				.orElseThrow(() -> new DataNotFoundException("브랜드 정보를 찾을 수 없습니다. "));
-
-			Item item = new Item();
-			item.setItemNm(itemFormDto.getItemNm());
-			item.setItemDetail(itemFormDto.getItemDetail());
-			item.setItemSellStatus(itemFormDto.getItemSellStatus());
-			item.setPrice(itemFormDto.getPrice());
-			item.setInventory(itemFormDto.getInventory());
-			item.setCategory(category);
-			item.setBrand(brand);
-			item.setCountview(0); // 초기 조회수 0
-			item.setHeart(0);
-			item.setAdmin(itemFormDto.getAdmin());
+			Item item = Item.toEntity(itemFormDto,category,brand);
+			item.addOptionList(itemFormDto.getOptions());
 			itemRepository.save(item);
 			return item.getId();
 		} catch (Exception e) {
@@ -68,54 +58,18 @@ public class ItemService {
 
 	// 상품정보 가져오기
 	@Transactional(readOnly = true)
-	public ItemFormDto getItemDetail(Long itemId) {
+	public ItemCreateRequest getItemDetail(Long itemId) {
 		Item item = itemRepository.findById(itemId)
 			.orElseThrow(ItemNotFoundException::new);
-		return ItemFormDto.builder()
-			.id(item.getId())
-			.category(item.getCategory().getId())
-			.brand(item.getBrand().getId())
-			.admin(item.getAdmin())
-			.itemNm(item.getItemNm())
-			.itemDetail(item.getItemDetail())
-			.itemSellStatus(item.getItemSellStatus())
-			.price(item.getPrice())
-			.inventory(item.getInventory())
-			.itemImgDtoList(item.getItemImgs())
-			.countview(item.getCountview())
-			.heart(item.getHeart())
-			.build();
+		return ItemCreateRequest.toDTO(item);
+
 	}
 
 	// 상품 수정
 	@Transactional
-	public void updateItem(ItemFormDto itemFormDto) {
+	public void updateItem(ItemCreateRequest itemFormDto) {
 		Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(ItemNotFoundException::new);
 		item.updateItem(itemFormDto);
-	}
-
-	@Transactional
-	//좋아요 추가 jh
-	public void heart1(Long id) {
-		Item item = itemRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid item Id:" + id));
-		item.increaseHeart();
-		itemRepository.save(item);
-	}
-
-	@Transactional
-	//조회수 jh
-	public Item getItemView(Long id) {
-		Optional<Item> itemview = this.itemRepository.findById(id);
-
-		if (itemview.isPresent()) {
-			Item itemview1 = itemview.get();
-			itemview1.setCountview(itemview1.getCountview() + 1);
-			this.itemRepository.save(itemview1);
-			return itemview1;
-		} else {
-			throw new IllegalArgumentException("question not found");
-		}
 	}
 
 	@Transactional

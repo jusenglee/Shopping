@@ -1,8 +1,6 @@
-package com.example.weblogin.controller.RestController;
+package com.example.weblogin.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.example.weblogin.domain.DTO.MemberFormDto;
+import com.example.weblogin.domain.DTO.MemberCreateRequest;
 import com.example.weblogin.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,7 +16,7 @@ public class RestMemberController {
 
 	//회원 정보 수정
 	@PostMapping("/user/update")
-	public void userUpdate( MemberFormDto memberFormDtober) {
+	public void userUpdate( MemberCreateRequest memberFormDtober) {
 		memberService.updateMember(memberFormDtober);
 	}
 

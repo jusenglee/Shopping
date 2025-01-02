@@ -19,7 +19,7 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.weblogin.config.baseEntity.BaseEntity;
-import com.example.weblogin.domain.DTO.MemberFormDto;
+import com.example.weblogin.domain.DTO.MemberCreateRequest;
 import com.example.weblogin.domain.cart.Cart;
 import com.example.weblogin.domain.order.Order;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -69,24 +69,24 @@ public class Member extends BaseEntity {
 	}
 
 	//회원 정보 생성
-	public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
+	public static Member createMember(MemberCreateRequest memberCreateRequest, PasswordEncoder passwordEncoder) {
 		Member member = new Member();
-		member.setName(memberFormDto.getName());
-		member.setEmail(memberFormDto.getEmail());
-		member.setAddress(memberFormDto.getAddress());
-		member.setPhone(memberFormDto.getPhone());
-		member.setPassword(passwordEncoder.encode(memberFormDto.getPassword()));  //암호화처리
-		member.setRole(memberFormDto.getRole());
+		member.setName(memberCreateRequest.getName());
+		member.setEmail(memberCreateRequest.getEmail());
+		member.setAddress(memberCreateRequest.getAddress());
+		member.setPhone(memberCreateRequest.getPhone());
+		member.setPassword(passwordEncoder.encode(memberCreateRequest.getPassword()));  //암호화처리
+		member.setRole(memberCreateRequest.getRole());
 
 		return member;
 	}
 
 	//회원 정보를 업데이트
-	public void updateMember(MemberFormDto memberFormDto) {
-		this.name = memberFormDto.getName();
-		this.email = memberFormDto.getEmail();
-		this.address = memberFormDto.getAddress();
-		this.phone = memberFormDto.getPhone();
+	public void updateMember(MemberCreateRequest memberCreateRequest) {
+		this.name = memberCreateRequest.getName();
+		this.email = memberCreateRequest.getEmail();
+		this.address = memberCreateRequest.getAddress();
+		this.phone = memberCreateRequest.getPhone();
 	}
 
 	//비밀번호 업데이트

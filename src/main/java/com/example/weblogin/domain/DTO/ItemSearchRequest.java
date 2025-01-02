@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 @Data
-public class ItemSearchRequestDTO {
+public class ItemSearchRequest {
     private String name;
     private List<Long> brandIds;
 
@@ -18,7 +18,7 @@ public class ItemSearchRequestDTO {
         PRICE_DESC,
         POPULARITY
     }
-    public ItemSearchRequestDTO(String name, List<Long> brandIds, List<Long> categoryIds, SortBy sortBy, int page, int size) {
+    public ItemSearchRequest(String name, List<Long> brandIds, List<Long> categoryIds, SortBy sortBy, int page, int size) {
         this.name = name;
         this.brandIds = brandIds;
         this.categoryIds = categoryIds;
@@ -27,4 +27,3 @@ public class ItemSearchRequestDTO {
         this.size = size;
     }
 }
-

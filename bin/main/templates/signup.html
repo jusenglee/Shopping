@@ -32,7 +32,7 @@
                                 <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">회원가입</p>
 
 
-                                <form th:action="@{/members/new}" method="post" class="mx-1 mx-md-4" th:object="${memberFormDto}">
+                                <form th:action="@{/members/new}" method="post" class="mx-1 mx-md-4" th:object="${memberCreateRequest}">
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                                         <div class="form-outline flex-fill mb-0">

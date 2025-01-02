@@ -55,7 +55,6 @@ public class SaleService {
             throw new IllegalStateException("판매할 수 없는 상품입니다.");
         }
 
-        item.stopSelling();
     }
 
     /**
@@ -70,7 +69,6 @@ public class SaleService {
             throw new IllegalStateException("판매를 재개할 수 없는 상품입니다.");
         }
 
-        item.resumeSelling();
     }
 
     /**

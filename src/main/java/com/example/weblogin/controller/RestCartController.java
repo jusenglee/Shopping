@@ -1,4 +1,4 @@
-package com.example.weblogin.controller.RestController;
+package com.example.weblogin.controller;
 
 import com.example.weblogin.domain.DTO.CartDto;
 import com.example.weblogin.service.CartService;

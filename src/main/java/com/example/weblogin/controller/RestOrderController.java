@@ -1,4 +1,4 @@
-package com.example.weblogin.controller.RestController;
+package com.example.weblogin.controller;
 
 import java.security.Principal;
 import java.util.HashMap;

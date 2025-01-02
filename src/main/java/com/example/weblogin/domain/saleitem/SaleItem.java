@@ -28,15 +28,18 @@ public class SaleItem extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "sale_item_id")
-	private Long Item_id;
+	private Long sale_item_id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "item_id")
 	private Item item;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "sale_id")
 	private Sale sale;
+
 	private Integer salePrice;
+
 	private Integer count;
 
 	public SaleItem() {
@@ -80,4 +83,3 @@ public class SaleItem extends BaseEntity {
 		return getSalePrice() - getItem().getPrice();
 	}
 }
-

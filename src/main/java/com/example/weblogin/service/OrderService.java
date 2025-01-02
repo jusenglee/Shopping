@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.weblogin.domain.DTO.OrderHistoryDto;
 import com.example.weblogin.domain.DTO.OrderItemDto;
-import com.example.weblogin.domain.ItemImg.ItemImg;
-import com.example.weblogin.domain.ItemImg.ItemImgRepository;
+import com.example.weblogin.domain.itemImg.ItemImg;
+import com.example.weblogin.domain.itemImg.ItemImgRepository;
 import com.example.weblogin.domain.cart.Cart;
 import com.example.weblogin.domain.cart.CartRepository;
 import com.example.weblogin.domain.cartItem.CartItem;

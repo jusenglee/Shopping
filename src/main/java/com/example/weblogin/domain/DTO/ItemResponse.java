@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class MainItemDto {
+public class ItemResponse {
 
     private Long id;
 
@@ -27,7 +27,7 @@ public class MainItemDto {
     private Integer heart;
 
     @QueryProjection
-    public MainItemDto(Long id, String itemNm, String itemDetail, String imgUrl, Integer price, String brand_name, String category_name, Integer countView, Integer heart) {
+    public ItemResponse(Long id, String itemNm, String itemDetail, String imgUrl, Integer price, String brand_name, String category_name, Integer countView, Integer heart) {
         this.id = id;
         this.itemNm = itemNm;
         this.itemDetail = itemDetail;

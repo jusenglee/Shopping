@@ -14,7 +14,7 @@ import javax.validation.constraints.NotEmpty;
 
 @NoArgsConstructor
 @Data
-public class MemberFormDto {
+public class MemberCreateRequest {
 
 	private Long id;
 
@@ -38,7 +38,7 @@ public class MemberFormDto {
 	private String role;
 
 	@Builder
-	public MemberFormDto(Long id, String name, String email, String password, String address, String phone,
+	public MemberCreateRequest(Long id, String name, String email, String password, String address, String phone,
 		String role) {
 		this.id = id;
 		this.name = name;
@@ -47,8 +47,8 @@ public class MemberFormDto {
 		this.phone = phone;
 	}
 
-	public static MemberFormDto of(Member entity) {
-		MemberFormDto dto = MemberFormDto.builder()
+	public static MemberCreateRequest of(Member entity) {
+		MemberCreateRequest dto = MemberCreateRequest.builder()
 			.id(entity.getId())
 			.name(entity.getName())
 			.email(entity.getEmail())
@@ -60,4 +60,3 @@ public class MemberFormDto {
 		return dto;
 	}
 }
-

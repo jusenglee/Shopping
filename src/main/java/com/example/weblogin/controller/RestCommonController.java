@@ -1,4 +1,4 @@
-package com.example.weblogin.controller.RestController;
+package com.example.weblogin.controller;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.weblogin.config.Exception.DataNotFoundException;
-import com.example.weblogin.domain.ItemImg.ItemImg;
+import com.example.weblogin.domain.itemImg.ItemImg;
 import com.example.weblogin.service.ItemImgService;
 import com.example.weblogin.service.ItemService;
 
