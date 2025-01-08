@@ -63,6 +63,7 @@ public class Item extends BaseEntity {
 
 	@Builder.Default
 	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private List<ItemOption> options = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.EAGER)

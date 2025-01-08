@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import com.example.weblogin.domain.DTO.ItemOptionRequest;
 import com.example.weblogin.domain.item.Item;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +36,7 @@ public class ItemOption {
     // 어떤 Item에 속하는 옵션인지
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
+    @JsonBackReference
     private Item item;
 
     // 색상, 사이즈, 재질을 Enum으로
@@ -60,9 +62,9 @@ public class ItemOption {
 
     public static ItemOption toEntity(ItemOptionRequest request) {
            return ItemOption.builder()
-                   .color(request.getColor())
-                   .size(request.getSize())
-                   .material(request.getMaterial())
+                   .color( ColorType.convertToColorType(request.getColor()))
+                   .size( SizeType.convertToSizeType(request.getSize()))
+                   .material( MaterialType.convertMaterialType(request.getMaterial()))
                    .stock(request.getStock())
                    .build();
        }

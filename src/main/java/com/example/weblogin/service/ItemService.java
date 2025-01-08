@@ -45,6 +45,7 @@ public class ItemService {
 				.orElseThrow(() -> new DataNotFoundException("카테고리 정보를 찾을 수 없습니다."));
 			Brand brand = brandRepository.findBrandById(itemFormDto.getBrand())
 				.orElseThrow(() -> new DataNotFoundException("브랜드 정보를 찾을 수 없습니다. "));
+
 			Item item = Item.toEntity(itemFormDto,category,brand);
 			item.addOptionList(itemFormDto.getOptions());
 			itemRepository.save(item);

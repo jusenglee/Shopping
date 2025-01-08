@@ -13,25 +13,30 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemOptionRequest {
 
-	private ColorType color;
-
-	private SizeType size;
-
-	private MaterialType material;
-
-	private Integer stock;
+	@NotBlank(message = "색상 필수 입력 값입니다. ")
+	private String color = null;
+	@NotBlank(message = "사이즈 필수 입력 값입니다. ")
+	private String size = null;
+	@NotBlank(message = "소재 필수 입력 값입니다. ")
+	private String material = null;
+	@Min(value = 1, message = "재고 필수 입력 값입니다. ")
+	private Integer stock = null;
 
 	public static ItemOptionRequest toDTO(ItemOption entity) {
 	        return ItemOptionRequest.builder()
-	                .color(entity.getColor())
-	                .size(entity.getSize())
-	                .material(entity.getMaterial())
+	                .color(entity.getColor().name())
+	                .size(entity.getSize().name())
+	                .material(entity.getMaterial().name())
 	                .stock(entity.getStock())
 	                .build();
 	    }

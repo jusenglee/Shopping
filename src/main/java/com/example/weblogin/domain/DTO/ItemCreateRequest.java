@@ -2,6 +2,8 @@ package com.example.weblogin.domain.DTO;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -32,18 +34,17 @@ public class ItemCreateRequest  {
 	@NotBlank(message = "상품명은 필수 입력 값입니다. ")
 	private String itemNm;
 
-	@NotNull(message = "가격은 필수 입력 값입니다.")
+	@Min(value = 1, message = "삼품의 가격을 입력해주세요.")
 	private Integer price;
 
 	@NotBlank(message = "상세 내용은 필수 입력 값입니다.")
 	private String itemDetail;
 
+	@Valid
 	private List<ItemOptionRequest> options;
 
-	@NotNull(message = "상품 상태는 필수 입력 값입니다. ")
 	private ItemSellStatus itemSellStatus;
 
-	@NotNull(message = "상품 이미지는 필수 입력 값입니다. ")
 	private List<ItemImg> itemImgDtoList;
 
 	private Integer countview = 0;
