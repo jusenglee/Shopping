@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String requestURI = request.getRequestURI();
 
 			// 예외 경로에 해당하는 경우 필터 체인을 계속 진행
-			if (requestURI.startsWith("/members/signup") || requestURI.startsWith("/members/signin")
+			if (requestURI.startsWith("/members/signup") || requestURI.startsWith("/members/signin") ||  requestURI.startsWith("/common")
 				|| requestURI.startsWith("/css") || requestURI.startsWith("/image") || requestURI.startsWith("/js")) {
 				filterChain.doFilter(request, response);
 				return;

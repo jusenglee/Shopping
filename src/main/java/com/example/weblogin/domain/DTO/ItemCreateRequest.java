@@ -17,6 +17,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 상품 저장을 위해 클라이언트로부터 데이터를 받아오는 DTO
+ */
 @Data
 @Builder
 @AllArgsConstructor
@@ -45,7 +48,7 @@ public class ItemCreateRequest  {
 
 	private ItemSellStatus itemSellStatus;
 
-	private List<ItemImg> itemImgDtoList;
+	private List<ItemImgDTO> itemImgDtoList;
 
 	private Integer countview = 0;
 
@@ -53,7 +56,7 @@ public class ItemCreateRequest  {
 
 	private Integer salePer = 0;
 
-	private Member admin;
+	private Long adminId;
 
 	public static ItemCreateRequest toDTO(Item entity) {
         return ItemCreateRequest.builder()
@@ -65,8 +68,9 @@ public class ItemCreateRequest  {
                 .price(entity.getPrice())
 				.salePer(entity.getSalePer())
                 .itemSellStatus(entity.getItemSellStatus())
-                .admin(entity.getAdmin())
+                .adminId(entity.getAdmin().getId())
                 .options(ItemOptionRequest.toDTOList(entity.getOptions()))
+                .itemImgDtoList(ItemImgDTO.toDTOList(entity.getItemImgs()))
                 .build();
     }
 }

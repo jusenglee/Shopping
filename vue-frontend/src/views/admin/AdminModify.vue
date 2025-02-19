@@ -6,7 +6,7 @@ import AdminSideBar from "@/components/AdminSideBar.vue";
 <template>
   <div class="content-wrapper">
     <!-- 사이드바 -->
-    <AdminSideBar/>
+    <AdminSideBar />
   </div>
 </template>
 

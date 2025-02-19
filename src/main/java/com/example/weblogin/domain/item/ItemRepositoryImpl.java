@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.example.weblogin.domain.DTO.ItemSearchRequest;
-import com.example.weblogin.domain.DTO.ItemResponse;
+import com.example.weblogin.domain.DTO.ItemResponseDTO;
 import com.example.weblogin.domain.DTO.QItemResponse;
 import com.example.weblogin.domain.itemImg.QItemImg;
 import com.example.weblogin.domain.itemCategory.QBrand;
@@ -30,7 +30,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 	private EntityManager entityManager;
 
 	@Override
-	public Page<ItemResponse> search(ItemSearchRequest request) {
+	public Page<ItemResponseDTO> search(ItemSearchRequest request) {
 		QItem item = QItem.item;
 		QCategorie categorie = QCategorie.categorie;
 		QItemImg itemImg = QItemImg.itemImg;
@@ -70,7 +70,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 		}
 
 		Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-		JPAQuery<ItemResponse> query = new JPAQuery<>(entityManager);
+		JPAQuery<ItemResponseDTO> query = new JPAQuery<>(entityManager);
 		query.select(new QItemResponse(
 				item.id,
 				item.itemNm,
@@ -91,7 +91,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize());
 
-		List<ItemResponse> itemResponse = query.fetch();
+		List<ItemResponseDTO> itemResponse = query.fetch();
 		long totalCount = query.fetchCount();
 		return new PageImpl<>(itemResponse, pageable, totalCount);
 	}

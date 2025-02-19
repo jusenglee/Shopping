@@ -3,6 +3,7 @@ import router from './router';
 import App from "@/App.vue";
 import store from './store';
 import './assets/css/styles.css';
+import './assets/css/ckStyles.css';
 import './assets/css/mainCss.css';
 import './assets/css/switch.css';
 import './assets/css/button.css';
@@ -23,6 +24,5 @@ app.config.globalProperties.$getCookie = function (name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
-// 앱 인스턴스를 생성하고 라우터를 사용하도록 설정합니다.
+// 앱 인스턴스를 생성하고 라우터를 사용하도록 설정
 app.use(dateFormatter).use(router).use(VueCookies).use(store).mount('#app');
-

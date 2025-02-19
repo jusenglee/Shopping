@@ -1,15 +1,24 @@
 <template>
   <div class="tags-input">
     <input
-        v-model="inputValue"
-        class="form-control"
-        placeholder="입력후 엔터"
-        type="text"
-        v-on:keyup.enter.stop.prevent="handleAddTag"
-    />
-    <div v-for="tag in tags" :key="tag" class="tag">
+      v-model="inputValue"
+      class="form-control"
+      placeholder="입력후 엔터"
+      type="text"
+      @keyup.enter.stop.prevent="handleAddTag"
+    >
+    <div
+      v-for="tag in tags"
+      :key="tag"
+      class="tag"
+    >
       {{ tag }}
-      <button type="button" v-on:click="handleRemoveTag(tag)">X</button>
+      <button
+        type="button"
+        @click="handleRemoveTag(tag)"
+      >
+        X
+      </button>
     </div>
   </div>
 </template>

@@ -1,10 +1,14 @@
 package com.example.weblogin.controller;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +19,7 @@ import com.example.weblogin.domain.itemCategory.CategorieRepository;
 import com.example.weblogin.domain.itemOption.ColorType;
 import com.example.weblogin.domain.itemOption.MaterialType;
 import com.example.weblogin.domain.itemOption.SizeType;
+import com.example.weblogin.service.ItemImgService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class CommonControlller {
 	private final CategorieRepository categorieRepository;
 	private final BrandRepository brandRepository;
+	private final ItemImgService itemImgService;
 
 	/**
 	 * 상품정보 - 색상
@@ -74,5 +80,19 @@ public class CommonControlller {
 	@GetMapping("/brands")
 	public List<Brand> getBrands() {
 		return brandRepository.findAll();
+	}
+
+	/**
+	 * DB에서 이미지를 찾아 외부로 내보내는 함수
+	 * @param imageId
+	 * @return ResponseEntity
+	 * @throws Exception
+	 */
+	@GetMapping("/getImage/{imageId}")
+	public ResponseEntity<byte[]> getImage(@PathVariable Long imageId) throws IOException {
+		byte[] imageBytes = itemImgService.loadFileAsResource(imageId);
+		return ResponseEntity.ok()
+			.contentType(MediaType.IMAGE_JPEG)
+			.body(imageBytes);
 	}
 }

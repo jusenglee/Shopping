@@ -51,6 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/members/signup", "/members/signin", "/admin/brands", "/admin/categories", "/css/**",
 				"/img/**", "/js/**",
 				"/images/**",
+				"/common/**",
 				"/members/new")
 			.permitAll()
 			.anyRequest()
@@ -84,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers(
-			"/css/**", "/img/**", "/js/**", "/images/**", "/admin/brands", "/admin/categories"
+			"/css/**", "/img/**", "/js/**", "/images/**", "/common/**","/admin/brands", "/admin/categories"
 		);
 		web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
