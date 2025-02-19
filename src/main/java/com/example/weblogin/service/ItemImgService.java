@@ -82,7 +82,7 @@ public class ItemImgService {
 				logger.error("이미지 파일 저장에 실패했습니다.", e);
 				throw new IllegalStateException("파일 저장 실패: " + imgName, e);
 			}
-			imgUrl = "/image/" + imgName;
+			imgUrl = fileUploadFullUrl;
 		}
 		//상품 이미지 정보 저장
         return ItemImgDTO.builder()
