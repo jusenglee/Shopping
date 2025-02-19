@@ -1,6 +1,7 @@
 package com.example.weblogin.domain.itemOption;
 
 import java.awt.*;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +17,8 @@ import javax.persistence.Table;
 import com.example.weblogin.domain.DTO.ItemOptionRequest;
 import com.example.weblogin.domain.item.Item;
 
+import com.example.weblogin.domain.item.ItemSellStatus;
+import com.example.weblogin.service.Utils;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,16 +59,15 @@ public class ItemOption {
 
     }
 
+    public static ItemOption toEntity(ItemOptionRequest request) {
+        Optional<ColorType> color = Utils.convertToEnum(request.getColor(), ColorType.class);
+        Optional<SizeType> size = Utils.convertToEnum(request.getSize(), SizeType.class);
+        Optional<MaterialType> material = Utils.convertToEnum(request.getMaterial(), MaterialType.class);
+
+        return ItemOption.builder().color(color.get()).size(size.get()).material(material.get()).stock(request.getStock()).build();
+    }
+
     public void setItem(Item item) {
         this.item = item;
     }
-
-    public static ItemOption toEntity(ItemOptionRequest request) {
-           return ItemOption.builder()
-                   .color( ColorType.convertToColorType(request.getColor()))
-                   .size( SizeType.convertToSizeType(request.getSize()))
-                   .material( MaterialType.convertMaterialType(request.getMaterial()))
-                   .stock(request.getStock())
-                   .build();
-       }
 }

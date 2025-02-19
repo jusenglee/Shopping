@@ -17,10 +17,10 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.example.weblogin.config.Exception.DataNotFoundException;
+import org.jetbrains.annotations.NotNull;
+
 import com.example.weblogin.config.baseEntity.BaseEntity;
 import com.example.weblogin.domain.DTO.ItemCreateRequest;
-import com.example.weblogin.domain.DTO.ItemOptionRequest;
 import com.example.weblogin.domain.itemImg.ItemImg;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.Categorie;
@@ -61,16 +61,15 @@ public class Item extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private ItemSellStatus itemSellStatus;  //상품 판매 상태
 
-	@Builder.Default
 	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonManagedReference
-	private List<ItemOption> options = new ArrayList<>();
+	private List<ItemOption> options;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
 	private Categorie category; // 카테고리 번호
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "brand_id")
 	private Brand brand;    //브랜드 번호
 
@@ -80,48 +79,55 @@ public class Item extends BaseEntity {
 	@Column(columnDefinition = "integer default 0", nullable = false)
 	private Integer countview = 0; //조회수
 
-	@OneToMany(mappedBy = "item")
-	@JsonManagedReference
-	private List<ItemImg> itemImgs; // 상품 이미지
+	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	private List<ItemImg> itemImgs;
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
-
 	private Member admin;    //상품 게시자
 
-	public static Item toEntity(ItemCreateRequest request,Categorie category ,Brand brand ) {
-        return Item.builder()
-                .itemNm(request.getItemNm())
-                .price(request.getPrice())
-                .admin(request.getAdmin())
-				.salePer(request.getSalePer() != null ? request.getSalePer() : 0)
-                .itemDetail(request.getItemDetail())
-                .itemSellStatus(request.getItemSellStatus())
-                .countview(0)
-                .heart(0)
-                .category(category)
-                .brand(brand)
-                .build();
-    }
+	public static Item toEntity(@NotNull ItemCreateRequest request, Categorie category, Brand brand, Member mber) {
+		return Item.builder()
+			.itemNm(request.getItemNm())
+			.price(request.getPrice())
+			.admin(mber)
+			.salePer(request.getSalePer() != null ? request.getSalePer() : 0)
+			.itemDetail(request.getItemDetail())
+			.itemSellStatus(request.getItemSellStatus())
+			.countview(0)
+			.heart(0)
+			.category(category)
+			.brand(brand)
+			.itemImgs(new ArrayList<>())
+			.options(new ArrayList<>())
+			.build();
+	}
 
-	public void addOptionList(List<ItemOptionRequest> options) {
-	    // this.options가 null이면 예외 발생 → 반드시 1)에서 초기화되어 있어야 함
-	    for (ItemOptionRequest req : options) {
-	        ItemOption option = ItemOption.toEntity(req);
-	        option.setItem(this);  // 양방향 연관관계 설정
-	        this.options.add(option);
-	    }
+	public void addOption(ItemOption option) {
+		this.options.add(option);
+		option.setItem(this);  // 양방향 연관관계 설정
+	}
+
+	public void addItemImg(ItemImg itemImg) {
+		this.itemImgs.add(itemImg);
+		itemImg.setItem(this); // 연관관계 주인 쪽에 this(Item) 할당
 	}
 
 	/**
 	 * 상품정보 업데이트
 	 * @param itemFormDto 전달받은 상품 정보
 	 */
-	public void updateItem(ItemCreateRequest itemFormDto) {
+	public void updateItem(@NotNull ItemCreateRequest itemFormDto) {
 		this.itemNm = itemFormDto.getItemNm();
 		this.price = itemFormDto.getPrice();
+		this.salePer = itemFormDto.getSalePer();
 		this.itemDetail = itemFormDto.getItemDetail();
 		this.itemSellStatus = itemFormDto.getItemSellStatus();
-		addOptionList(itemFormDto.getOptions());
 	}
+
+	public void updateSellStatus(ItemSellStatus sellStatus) {
+		this.itemSellStatus = sellStatus;
+	}
+
 }

@@ -1,16 +1,20 @@
 package com.example.weblogin.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.example.weblogin.domain.DTO.ItemImgDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +46,23 @@ public class ItemImgService {
 	@Value("${itemImgLocation}")
 	private String itemImgLocation;
 
+
+	@Transactional
+	public List<ItemImgDTO> saveItemImgList(List<MultipartFile> itemImgFile) {
+		List<ItemImgDTO> itemImgDtoList = Optional.ofNullable(itemImgFile)
+			.orElse(List.of())
+			.stream()
+			.map(this::saveItemImg) // MultipartFile → ItemImgDTO
+			.collect(Collectors.toList());
+		return itemImgDtoList;
+	}
 	/**
 	 * 상품 이미지 저장
 	 * @param itemImgFile 실제 파일 데이터
 	 * @throws Exception 예외처리
 	 */
 	@Transactional
-	public ItemImg saveItemImg(MultipartFile itemImgFile) {
+	public ItemImgDTO saveItemImg(MultipartFile itemImgFile) {
 		String oriImgName = itemImgFile.getOriginalFilename();
 		String imgName = "";
 		String imgUrl = "";
@@ -68,34 +82,18 @@ public class ItemImgService {
 				logger.error("이미지 파일 저장에 실패했습니다.", e);
 				throw new IllegalStateException("파일 저장 실패: " + imgName, e);
 			}
-			imgUrl = "/image/" + imgName;
+			imgUrl = fileUploadFullUrl;
 		}
 		//상품 이미지 정보 저장
-		ItemImg itemImg = ItemImg.builder()
+        return ItemImgDTO.builder()
 			.imgName(imgName)
 			.oriImgName(oriImgName)
 			.repimgYn("N")
 			.imgUrl(imgUrl)
 			.build();
-		itemImgRepository.save(itemImg);
-		logger.info("상품 이미지 저장 완료. 이미지 ID : {}", itemImg.getId());
-		return itemImg;
 	}
 
-	/**
-	 * 이미지에 상품 매핑하는 메소드
-	 * @param itemId 상품 ID
-	 * @param img 매핑할 이미지 객체
-	 */
-	@Transactional
-	public void addImageToItem(Long itemId, ItemImg img) {
-		Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
-		img.setItem(item);
-		img.setRepimgYn("Y");
-		itemImgRepository.save(img);
-		logger.info("상품 이미지 등록 완료. 상품 id :{}", itemId);
-		logger.info("상품 이미지 등록 완료. 이미지 id :{}", img.getId());
-	}
+
 
 	/**
 	 * 상품에 매핑된 이미지 불러오기
@@ -111,10 +109,17 @@ public class ItemImgService {
 	 * @param imageid
 	 * @return
 	 */
-	public Resource loadFileAsResource(Long imageid) throws MalformedURLException {
+	public  byte[] loadFileAsResource(Long imageid) throws MalformedURLException {
 		ItemImg itemImg = itemImgRepository.findById(imageid).orElseThrow(DataNotFoundException::new);
+
 		Path filePath = Paths.get(itemImgLocation).resolve(itemImg.getImgName()).normalize();
-		return new UrlResource(filePath.toUri());
+		File file = new File(filePath.toString());
+
+		try (FileInputStream fis = new FileInputStream(file)) {
+			return fis.readAllBytes();
+		} catch (IOException e) {
+			throw new RuntimeException("이미지 파일을 읽을 수 없습니다.", e);
+		}
 	}
 
 	/**

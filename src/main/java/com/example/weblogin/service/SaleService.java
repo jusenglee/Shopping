@@ -1,5 +1,6 @@
 package com.example.weblogin.service;
 
+import com.example.weblogin.config.Exception.ItemNotFoundException;
 import com.example.weblogin.domain.DTO.SaleInfo;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
@@ -20,20 +21,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SaleService {
 
+    private static final IllegalStateException IllegalStateException = new IllegalStateException("존재하지 않는 상품입니다.");
     private final SaleRepository saleRepository;
     private final ItemRepository itemRepository;
-
     private final SaleItemRepository saleItemRepository;
 
-    private static final IllegalStateException IllegalStateException =  new IllegalStateException("존재하지 않는 상품입니다.");
     /**
      * 판매내역 전체 조회
      */
     public List<SaleInfo> getSaleInfoList() {
         List<Sale> sales = saleRepository.findAllByOrderByIdDesc();
-        return sales.stream()
-                .map(sale -> new SaleInfo(sale.getSaleDate(), sale.getTotalProfit()))
-                .collect(Collectors.toList());
+        return sales.stream().map(sale -> new SaleInfo(sale.getSaleDate(), sale.getTotalProfit())).collect(Collectors.toList());
     }
 
     /**
@@ -44,15 +42,32 @@ public class SaleService {
     }
 
     /**
+     * 상품 삭제
+     */
+    @Transactional
+    public void deleteItem(Long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
+
+        if (item.getItemSellStatus() == ItemSellStatus.SELL) {
+            throw new IllegalArgumentException("상품을 판매 중지 후 시도해주세요.");
+        } else {
+            itemRepository.deleteById(itemId);
+        }
+
+    }
+
+
+    /**
      * 상품 판매 중지
      */
     @Transactional
     public void stopSellingItem(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 상품입니다."));
+        Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
 
-        if (item.getItemSellStatus() == ItemSellStatus.NOT_SALE || item.getItemSellStatus() == ItemSellStatus.SOLD_OUT) {
-            throw new IllegalStateException("판매할 수 없는 상품입니다.");
+        if (item.getItemSellStatus() == ItemSellStatus.STOPPED) {
+            throw new IllegalArgumentException("이미 판매 중지된 상품입니다.");
+        } else {
+            item.updateSellStatus(ItemSellStatus.STOPPED);
         }
 
     }
@@ -62,11 +77,12 @@ public class SaleService {
      */
     @Transactional
     public void resumeSellingItem(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 상품입니다."));
+        Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
 
-        if (item.getItemSellStatus() != ItemSellStatus.NOT_SALE) {
-            throw new IllegalStateException("판매를 재개할 수 없는 상품입니다.");
+        if (item.getItemSellStatus() == ItemSellStatus.NOT_SALE || item.getItemSellStatus() == ItemSellStatus.SOLD_OUT) {
+            item.updateSellStatus(ItemSellStatus.SELL);
+        } else {
+            throw new IllegalArgumentException("이미 판매중인 상품입니다.");
         }
 
     }
@@ -75,20 +91,17 @@ public class SaleService {
      * 상품 판매 내역 조회
      */
     public List<SaleItem> getSaleItems(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 상품입니다."));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalStateException("존재하지 않는 상품입니다."));
 
         return saleItemRepository.findAllByItem(item);
     }
-
 
 
     /**
      * 상품별 수익 조회
      */
     public Long getProfitByItem(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 상품입니다."));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalStateException("존재하지 않는 상품입니다."));
 
         List<SaleItem> saleItems = saleItemRepository.findAllByItem(item);
 
