@@ -57,7 +57,7 @@ public class SellerPageController {
 	@GetMapping("/itemManage/sellerItemList")
 	public List<ItemResponseDTO> saleList() {
 		Member member = MemberService.getCurrentUserMember(); //세션으로부터 사용자 검증 및 정보 가져오기
-		List<Item> items = sellerPageService.getItemsOnSaller(member); // 등록한 item 목록 select
+                List<Item> items = sellerPageService.getItemsOnSeller(member); // 등록한 item 목록 select
 		return items.stream()
 			.map(ItemResponseDTO::toDTO)
 			.collect(Collectors.toList()); //ResponseDTO로 이루어진 List 형태로 변환하여 반환
