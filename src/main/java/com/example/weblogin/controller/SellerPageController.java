@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.weblogin.domain.dto.request.ItemCreateRequest;
+import com.example.weblogin.domain.dto.FileDTO;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.member.Member;
 
@@ -120,10 +121,20 @@ public class SellerPageController {
 	 * 사용자 (Seller)정보 수정 페이지 - 사용자 정보 업데이트
 	 * @return
 	 */
-	@PostMapping("/sellerInfoUpdate")
-	public ResponseEntity<?> updateSellerInfo(@Valid @RequestBody SellerInfoUpdateRequest requestDTO) {
-		Member member = MemberService.getCurrentUserMember();//세션에서 데이터 조회
-		memberService.updateSellerInfo(member, requestDTO);
-		return ResponseEntity.ok(member);
-	}
+        @PostMapping("/sellerInfoUpdate")
+        public ResponseEntity<?> updateSellerInfo(@Valid @RequestBody SellerInfoUpdateRequest requestDTO) {
+                Member member = MemberService.getCurrentUserMember();//세션에서 데이터 조회
+                memberService.updateSellerInfo(member, requestDTO);
+                return ResponseEntity.ok(member);
+        }
+
+        /**
+         * 특정 상품의 이미지 메타데이터 조회
+         * @param itemId 조회할 상품 ID
+         * @return 이미지 메타데이터 목록
+         */
+        @GetMapping("/item/{itemId}/images")
+        public List<FileDTO> getItemImages(@PathVariable Long itemId) {
+                return sellerPageService.getItemImages(itemId);
+        }
 }

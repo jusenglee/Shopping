@@ -134,15 +134,29 @@ public class SellerPageService {
 	 * 상품 판매 재개
 	 */
 	@Transactional
-	public void resumeSellingItem(Long itemId) {
-		Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
+        public void resumeSellingItem(Long itemId) {
+                Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
 
-		if (item.getItemSellStatus() == ItemSellStatus.NOT_SALE
-			|| item.getItemSellStatus() == ItemSellStatus.SOLD_OUT) {
-			item.updateSellStatus(ItemSellStatus.SELL);
-		} else {
-			throw new IllegalArgumentException("이미 판매중인 상품입니다.");
-		}
+                if (item.getItemSellStatus() == ItemSellStatus.NOT_SALE
+                        || item.getItemSellStatus() == ItemSellStatus.SOLD_OUT) {
+                        item.updateSellStatus(ItemSellStatus.SELL);
+                } else {
+                        throw new IllegalArgumentException("이미 판매중인 상품입니다.");
+                }
 
-	}
+        }
+
+        /**
+         * 상품의 이미지 메타데이터 조회
+         * @param itemId 상품 ID
+         * @return 이미지 메타데이터 목록
+         */
+        @Transactional(readOnly = true)
+        public List<FileDTO> getItemImages(Long itemId) {
+                Item item = itemRepository.findById(itemId)
+                        .orElseThrow(ItemNotFoundException::new);
+                return item.getItemImages().stream()
+                        .map(FileDTO::toDTO)
+                        .collect(Collectors.toList());
+        }
 }
