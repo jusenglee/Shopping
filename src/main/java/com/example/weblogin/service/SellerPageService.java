@@ -96,9 +96,9 @@ public class SellerPageService {
 	/**
 	 * 판매 중인 상품 조회
 	 */
-	public List<Item> getItemsOnSaller(Member Member) {
-		return itemRepository.findBySeller(Member);
-	}
+        public List<Item> getItemsOnSeller(Member member) {
+                return itemRepository.findBySeller(member);
+        }
 
 	/**
 	 * 상품 삭제
