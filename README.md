@@ -1,6 +1,35 @@
 # Shopping
-쇼핑몰
 
-![image](https://user-images.githubusercontent.com/85321903/236382156-bd46c005-c20a-410b-91eb-250f946c795a.png)
-![image](https://user-images.githubusercontent.com/85321903/236382269-32662408-c53d-4042-961e-ada7d1da240c.png)
-![image](https://user-images.githubusercontent.com/85321903/236382202-b7729e18-9fea-4b6d-ba91-aca8df7dcd35.png)
+쇼핑몰 프로젝트입니다.
+
+## 프로젝트 구조
+
+- `src` : Spring Boot 기반 백엔드 소스
+- `frontend` : Vue.js 프론트엔드 소스
+
+## 백엔드 실행 방법
+
+```bash
+./gradlew bootRun
+```
+
+테스트 실행:
+
+```bash
+./gradlew test
+```
+
+## 프론트엔드 실행 방법
+
+```bash
+cd frontend
+npm install
+npm run serve
+```
+
+배포용 빌드:
+
+```bash
+npm run build
+```
+

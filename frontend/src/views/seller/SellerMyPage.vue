@@ -63,10 +63,11 @@ import AdminSideBar from "@/components/AdminSideBar.vue";
             </div>
             <div class="col">
               <div class="illustration">
-                <img size="100"
+                <img
+                  size="100"
                   alt="Illustration"
                   src="@/assets/images/002.png"
-                     class="img-fluid rounded-circle mb-2"
+                  class="img-fluid rounded-circle mb-2"
                 >
               </div>
             </div>
