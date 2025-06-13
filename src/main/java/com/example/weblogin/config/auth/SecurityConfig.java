@@ -47,39 +47,23 @@ public class SecurityConfig {
 				.requestMatchers("**/user/**").authenticated()   // 해당 URL은 로그인한 이용자만 접근 가능
 				.requestMatchers("/members/signup", "/members/signin",
 					"/common/**").permitAll()   // 해당 URL은 로그인 없이 인증가능
-				.anyRequest().authenticated() // 그 외 모든 요청 인증처리
-		);
-
-
-			.
-			.and()
-			.csrf().disable()
-			.authorizeRequests()
-			.antMatchers("**/seller/**")
-			.hasRole("SELLER")
-			.antMatchers("**/user/**")
-			.authenticated()
-			.antMatchers("/members/signup", "/members/signin",
-				"/common/**")
-			.permitAll()
-			.anyRequest()
-			.permitAll()
-			.and()
-			.formLogin()
-			.loginPage("/members/signin")
-			.usernameParameter("email")
-			.successHandler(new CustomAuthenticationSuccessHandler(tokenProvider)) // 인증 성공 핸들러 등록
-			.failureHandler(new CustomAuthenticationFailureHandler())
-			.and()
-			.logout()
-			.logoutUrl("/members/logout")
-			.logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
-			.logoutSuccessUrl("/")
-			.invalidateHttpSession(true)
-			.deleteCookies("JSESSIONID")
-			.and()
-			.exceptionHandling()
-			.accessDeniedPage("/access-denied");
+				.anyRequest().authenticated()
+				.and()
+				.formLogin()
+				.loginPage("/members/signin")
+				.usernameParameter("email")
+				.successHandler(new CustomAuthenticationSuccessHandler(tokenProvider)) // 인증 성공 핸들러 등록
+				.failureHandler(new CustomAuthenticationFailureHandler())
+				.and()
+				.logout()
+				.logoutUrl("/members/logout")
+				.logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
+				.logoutSuccessUrl("/")
+				.invalidateHttpSession(true)
+				.deleteCookies("JSESSIONID")
+				.and()
+				.exceptionHandling()
+				.accessDeniedPage("/access-denied");
 
 		//JWTAuthenticationFilter 추가
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
