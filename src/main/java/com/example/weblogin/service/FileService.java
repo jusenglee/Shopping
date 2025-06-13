@@ -3,7 +3,6 @@ package com.example.weblogin.service;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -19,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,7 +94,7 @@ public class FileService {
 	 * @param
 	 * @return
 	 */
-	public  byte[] loadFileAsResource(Long fileId) throws MalformedURLException {
+        public  byte[] loadFileAsResource(Long fileId) {
 		File file = fileRepository.findById(fileId).orElseThrow(DataNotFoundException::new);
 
 		Path filePath = Paths.get(itemImgLocation).resolve(file.getFileUrl()).normalize();
