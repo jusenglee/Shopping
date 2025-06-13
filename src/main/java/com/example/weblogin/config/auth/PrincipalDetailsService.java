@@ -31,7 +31,7 @@ public class PrincipalDetailsService implements UserDetailsService {
         }
         // Enum 타입의 역할을 문자열로 변환하여 GrantedAuthority 객체를 생성
         List<GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + member.getRole().name())
+                new SimpleGrantedAuthority(member.getRole().name())
         );
 
         // PrincipalDetails 객체를 생성하여 반환

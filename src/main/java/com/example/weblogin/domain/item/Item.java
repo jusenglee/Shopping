@@ -20,8 +20,8 @@ import javax.persistence.OneToMany;
 import org.jetbrains.annotations.NotNull;
 
 import com.example.weblogin.config.baseEntity.BaseEntity;
-import com.example.weblogin.domain.DTO.ItemCreateRequest;
-import com.example.weblogin.domain.itemImg.ItemImg;
+import com.example.weblogin.domain.dto.request.ItemCreateRequest;
+import com.example.weblogin.domain.file.File;
 import com.example.weblogin.domain.itemCategory.Brand;
 import com.example.weblogin.domain.itemCategory.Categorie;
 import com.example.weblogin.domain.itemOption.ItemOption;
@@ -63,7 +63,7 @@ public class Item extends BaseEntity {
 
 	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonManagedReference
-	private List<ItemOption> options;
+	private List<ItemOption> options; //상품과 관련된 색, 사이즈 재고 등
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
@@ -79,19 +79,18 @@ public class Item extends BaseEntity {
 	@Column(columnDefinition = "integer default 0", nullable = false)
 	private Integer countview = 0; //조회수
 
-	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-
-	private List<ItemImg> itemImgs;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<File> itemImages; // 상품 이미지
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
-	private Member admin;    //상품 게시자
+	private Member seller;    //상품 게시자
 
-	public static Item toEntity(@NotNull ItemCreateRequest request, Categorie category, Brand brand, Member mber) {
+	public static Item createItem(@NotNull ItemCreateRequest request, Categorie category, Brand brand, Member mber, List<File> files, List<ItemOption> options) {
 		return Item.builder()
 			.itemNm(request.getItemNm())
 			.price(request.getPrice())
-			.admin(mber)
+			.seller(mber)
 			.salePer(request.getSalePer() != null ? request.getSalePer() : 0)
 			.itemDetail(request.getItemDetail())
 			.itemSellStatus(request.getItemSellStatus())
@@ -99,8 +98,8 @@ public class Item extends BaseEntity {
 			.heart(0)
 			.category(category)
 			.brand(brand)
-			.itemImgs(new ArrayList<>())
-			.options(new ArrayList<>())
+			.itemImages(files)
+			.options(options)
 			.build();
 	}
 
@@ -109,9 +108,8 @@ public class Item extends BaseEntity {
 		option.setItem(this);  // 양방향 연관관계 설정
 	}
 
-	public void addItemImg(ItemImg itemImg) {
-		this.itemImgs.add(itemImg);
-		itemImg.setItem(this); // 연관관계 주인 쪽에 this(Item) 할당
+	public void addItemImg(File file) {
+		this.itemImages.add(file);
 	}
 
 	/**

@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -16,6 +12,10 @@ import org.springframework.stereotype.Component;
 import com.example.weblogin.domain.member.Member;
 import com.example.weblogin.service.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -49,6 +49,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		userInfo.put("username", username);
 		userInfo.put("role", role);
 		userInfo.put("token", token);
+		boolean needAddress = (member.getAddress() == null);
+		userInfo.put("needAddress", needAddress);
 
 		// Map을 JSON으로 변환하여 응답 본문에 포함
 		String userInfoJson = objectMapper.writeValueAsString(userInfo);

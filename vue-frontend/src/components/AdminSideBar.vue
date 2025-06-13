@@ -5,28 +5,28 @@
 <template>
   <div class="sidebar">
     <ul>
-      <li :class="{ active: $route.name === 'AdminPage' }">
-        <router-link to="/admin/AdminPage">
+      <li :class="{ active: $route.name === 'SellerMyPage' }">
+        <router-link to="/seller/sellerMyPage">
           대시보드
         </router-link>
       </li>
-      <li :class="{ active: $route.name === 'NewItem' }">
-        <router-link to="/admin/NewItem">
+      <li :class="{ active: $route.name === 'SellerNewItemPage' }">
+        <router-link to="/seller/sellerNewItemPage">
           상품 등록
         </router-link>
       </li>
-      <li :class="{ active: $route.name === 'ItemManage' }">
-        <router-link to="/admin/ItemManage">
+      <li :class="{ active: $route.name === 'SellerItemManagePage' }">
+        <router-link to="/seller/sellerItemManagePage">
           상품 관리
         </router-link>
       </li>
-      <li :class="{ active: $route.name === 'AdminModify' }">
-        <router-link to="/admin/AdminModify">
+      <li :class="{ active: $route.name === 'SellerModifyInfo' }">
+        <router-link to="/seller/sellerModifyInfo">
           개인정보 수정
         </router-link>
       </li>
       <li :class="{ active: $route.name === 'SaleList' }">
-        <router-link to="/admin/SaleList">
+        <router-link to="/seller/saleList">
           판매 내역
         </router-link>
       </li>

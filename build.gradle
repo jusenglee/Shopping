@@ -1,28 +1,27 @@
+
 buildscript {
     ext {
         queryDslVersion = "5.0.0"
     }
 }
-
 plugins {
-    id 'org.springframework.boot' version '2.7.0' // 스프링 부트 버전 업그레이드
+    id 'org.springframework.boot' version '3.1.2' // 스프링 부트 버전 업그레이드
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    // querydsl 추가
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
     id 'java'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
-
+// Spring Boot 3.x는 최소 Java 17을 요구하므로 sourceCompatibility를 17로 업데이트합니다.
+sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // Spring Boot dependencies
+    // Spring Boot 기본 스타터 의존성
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -31,50 +30,52 @@ dependencies {
     implementation 'org.springframework.security:spring-security-acl'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.webjars:bootstrap:5.2.3'
-    implementation 'org.webjars:jquery:3.6.4'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // Webjars 및 기타 프론트엔드 관련 의존성
+    implementation 'org.webjars:bootstrap:5.2.3'
     implementation 'org.webjars:sockjs-client:1.5.1'
     implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'org.jetbrains:annotations:24.0.1'
+    implementation 'javax.servlet:javax.servlet-api:3.1.0'
+    implementation 'javax.servlet:servlet-api:2.5'
 
-    // Log4j2 Core and API
+    // Log4j2 (필요에 따라 최신 버전으로 교체 고려)
     implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
     implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
 
-    // Querydsl dependencies
+    // Querydsl 관련 의존성
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-    //JWT
+    // JWT (중복 제거)
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
-
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    // Lombok 및 Spring Boot Configuration Processor
     annotationProcessor 'org.projectlombok:lombok'
-    // Other dependencies
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    // 기타 의존성
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly 'mysql:mysql-connector-java'
-
     implementation 'org.modelmapper:modelmapper:3.1.1'
-
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
     implementation 'org.apache.poi:poi-ooxml:5.2.2'
 
+    // 테스트 의존성
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 }
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-}// querydsl 세팅 시작
+}
+
+// Querydsl 설정
 def querydslDir = "$buildDir/generated/querydsl"
 querydsl {
     jpa = true
@@ -89,4 +90,3 @@ configurations {
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
 }
-// querydsl 세팅 끝

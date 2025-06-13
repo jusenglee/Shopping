@@ -9,17 +9,20 @@ const routes = [{
     path: '/members/signin', name: 'signin', component: () => import('@/views/LoginPage.vue'), // Lazy load 방식
 }, {
     path: '/members/signup', name: 'signup', component: () => import('@/views/LoginPage.vue'), // Lazy load 방식
+},
+
+// 판매자 마이페이지
+    {
+    path: '/seller/sellerMyPage', component: () => import('@/views/seller/SellerMyPage.vue'), name: 'SellerMyPage'
+}, {path: '/seller/sellerNewItemPage', component: () => import('@/views/seller/SellerNewItemPage.vue'), name: 'SellerNewItemPage'}, {
+    path: '/seller/sellerModifyItemPage/:id', component: () => import('@/views/seller/SellerNewItemPage.vue'), name: 'SellerModifyItemPage'
 }, {
-    path: '/admin/AdminPage', component: () => import('@/views/admin/AdminPage.vue'), name: 'AdminPage'
-}, {path: '/admin/NewItem', component: () => import('@/views/admin/NewItem.vue'), name: 'NewItem'}, {
-    path: '/admin/Modified/:id', component: () => import('@/views/admin/NewItem.vue'), name: 'Modified'
+    path: '/seller/sellerItemManagePage', component: () => import('@/views/seller/SellerItemManagePage.vue'), name: 'SellerItemManagePage'
 }, {
-    path: '/admin/ItemManage', component: () => import('@/views/admin/ItemManage.vue'), name: 'ItemManage'
+    path: '/seller/sellerModifyInfo', component: () => import('@/views/seller/SellerModifyInfo.vue'), name: 'SellerModifyInfo'
 }, {
-    path: '/admin/AdminModify', component: () => import('@/views/admin/AdminModify.vue'), name: 'AdminModify'
-}, {
-    path: '/admin/SaleList', component: () => import('@/views/admin/SaleList.vue'), name: 'SaleList'
-}, // 다른 라우트 설정들...
+    path: '/seller/saleList', component: () => import('@/views/seller/SaleList.vue'), name: 'SaleList'
+},
 ];
 
 // 라우터 인스턴스를 생성합니다.

@@ -49,21 +49,21 @@ function logOut() {
               >Home</a>
             </li>
             <li
-              v-if="userInfo.role === 'ROLE_ADMIN'"
+              v-if="userInfo.role === 'SELLER'"
               class="nav-item"
             >
               <a
                 class="nav-link"
-                href="@{admin/newitem}"
+                href="@{seller/sellerNewItemPage}"
               >upload</a>
             </li>
             <li
-              v-if="userInfo.role === 'ROLE_ADMIN'"
+              v-if="userInfo.role === 'SELLER'"
               class="nav-item"
             >
               <a
                 class="nav-link"
-                href="@{admin/manage}"
+                href="@{seller/sellerItemManagePage}"
               >Manage</a>
             </li>
             <li class="nav-item dropdown">
@@ -144,50 +144,50 @@ function logOut() {
                 data-bs-toggle="dropdown"
                 type="button"
               >
-                <span id="mberName">{{ userInfo.username }}{{ userInfo.role === 'ROLE_ADMIN' ? ' 판매자님' : '' }}</span>
+                <span id="mberName">{{ userInfo.username }}{{ userInfo.role === 'SELLER' ? ' 판매자님' : '' }}</span>
               </button>
               <ul
                 id="mberNemu"
                 aria-labelledby="dropdownMenuButton"
                 class="dropdown-menu"
               >
-                <li v-if="userInfo.role === 'ROLE_ADMIN'">
+                <li v-if="userInfo.role === 'SELLER'">
                   <router-link
                     class="dropdown-item"
-                    to="/admin/AdminPage"
+                    to="/seller/sellerMyPage"
                   >
                     판매자페이지
                   </router-link>
                 </li>
-                <li v-if="userInfo.role === 'ROLE_ADMIN'">
+                <li v-if="userInfo.role === 'SELLER'">
                   <router-link
                     class="dropdown-item"
-                    to="/admin/ItemManage"
+                    to="/seller/sellerItemManagePage"
                   >
                     상품관리
                   </router-link>
                 </li>
-                <li v-if="userInfo.role === 'ROLE_ADMIN'">
+                <li v-if="userInfo.role === 'SELLER'">
                   <router-link
                     class="dropdown-item"
-                    to="/admin/SaleList"
+                    to="/seller/saleList"
                   >
                     판매내역
                   </router-link>
                 </li>
-                <li v-if="userInfo.role === 'ROLE_USER'">
+                <li v-if="userInfo.role === 'USER'">
                   <a
                     class="dropdown-item"
                     href="/user/myPage"
                   >마이페이지</a>
                 </li>
-                <li v-if="userInfo.role === 'ROLE_USER'">
+                <li v-if="userInfo.role === 'USER'">
                   <a
                     class="dropdown-item"
                     href="/user/cart"
                   >장바구니</a>
                 </li>
-                <li v-if="userInfo.role === 'ROLE_USER'">
+                <li v-if="userInfo.role === 'USER'">
                   <a
                     class="dropdown-item"
                     href="/user/orderHist"

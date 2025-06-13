@@ -19,7 +19,7 @@ import com.example.weblogin.domain.itemCategory.CategorieRepository;
 import com.example.weblogin.domain.itemOption.ColorType;
 import com.example.weblogin.domain.itemOption.MaterialType;
 import com.example.weblogin.domain.itemOption.SizeType;
-import com.example.weblogin.service.ItemImgService;
+import com.example.weblogin.service.FileService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class CommonControlller {
 	private final CategorieRepository categorieRepository;
 	private final BrandRepository brandRepository;
-	private final ItemImgService itemImgService;
+	private final FileService fileService;
 
 	/**
 	 * 상품정보 - 색상
@@ -90,7 +90,7 @@ public class CommonControlller {
 	 */
 	@GetMapping("/getImage/{imageId}")
 	public ResponseEntity<byte[]> getImage(@PathVariable Long imageId) throws IOException {
-		byte[] imageBytes = itemImgService.loadFileAsResource(imageId);
+		byte[] imageBytes = fileService.loadFileAsResource(imageId);
 		return ResponseEntity.ok()
 			.contentType(MediaType.IMAGE_JPEG)
 			.body(imageBytes);

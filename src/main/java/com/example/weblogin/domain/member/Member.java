@@ -16,121 +16,80 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.example.weblogin.config.baseEntity.BaseEntity;
-import com.example.weblogin.domain.DTO.MemberCreateRequest;
-import com.example.weblogin.domain.cart.Cart;
-import com.example.weblogin.domain.order.Order;
+import com.example.weblogin.domain.delivery.Address;
+import com.example.weblogin.domain.dto.request.MemberCreateRequest;
+import com.example.weblogin.domain.dto.request.SellerInfoUpdateRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Table(name = "User")
 @Entity
 @Getter
 @JsonIgnoreProperties
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Member extends BaseEntity {
 
-	@OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
-	private final List<Order> orders = new ArrayList<>();
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "member_id")
 	private Long id;
+
 	@NotBlank
 	@Column(unique = true)
 	private String email;
+
 	@NotBlank
 	@Column(name = "member_password")
 	private String password;
+
 	@NotBlank
 	@Column(name = "member_name")
 	private String name;
+
 	@NotBlank
 	@Column(name = "member_iphone")
 	private String phone;
+
 	@Embedded
-	@Column(name = "member_address")
-	private String address;
+	private Address address;
+
 	@Column(name = "member_role")
 	private Enum<MemberRole> role;
-	@OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Cart cart;
 
-	public Member() {
+	@OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+	private SellerInfo sellerInfo;
+
+	//생성자
+	public static Member createMember(MemberCreateRequest  request) {
+		return Member.builder()
+			.email(request.getEmail())
+			.password(request.getPassword())
+			.name(request.getName())
+			.phone(request.getPhone())
+			.address(new Address(request.getZipCode(), request.getRoadAddress(), request.getDetailAddress()))
+			.role(MemberRole.valueOf(request.getRole()))
+			.sellerInfo(new SellerInfo())
+			.build();
 	}
-
-	public Member(String email, String password, String name, String address) {
-		this.email = email;
-		this.password = password;
-		this.name = name;
-		this.address = address;
-	}
-
-	//회원 정보 생성
-	public static Member createMember(MemberCreateRequest memberCreateRequest, PasswordEncoder passwordEncoder) {
-		Member member = new Member();
-		member.setName(memberCreateRequest.getName());
-		member.setEmail(memberCreateRequest.getEmail());
-		member.setAddress(memberCreateRequest.getAddress());
-		member.setPhone(memberCreateRequest.getPhone());
-		member.setPassword(passwordEncoder.encode(memberCreateRequest.getPassword()));  //암호화처리
-		member.setRole(memberCreateRequest.getRole());
-
-		return member;
-	}
-
-	//회원 정보를 업데이트
-	public void updateMember(MemberCreateRequest memberCreateRequest) {
-		this.name = memberCreateRequest.getName();
-		this.email = memberCreateRequest.getEmail();
-		this.address = memberCreateRequest.getAddress();
-		this.phone = memberCreateRequest.getPhone();
+	public void updateBasicInfo(SellerInfoUpdateRequest request) {
+		this.name = request.getName();
+		this.email = request.getEmail();
+		this.phone = request.getPhone();
+		this.getAddress().setZipCode(request.getRoadAddress());
+		this.getAddress().setRoadAddress(request.getRoadAddress());
+		this.getAddress().setDetailAddress(request.getDetailAddress());
 	}
 
 	//비밀번호 업데이트
 	public void updatePassword(String newPassword) {
 		this.password = newPassword;
-	}
-
-	private void setRole(String role) {
-		if (role.equals("ROLE_ADMIN")) {
-			this.role = MemberRole.ADMIN;
-		} else {
-			this.role = MemberRole.USER;
-		}
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public void setCart(Cart cart) {
-		this.cart = cart;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public void setRole(Enum<MemberRole> role) {
-		this.role = role;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
 	}
 }

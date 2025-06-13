@@ -11,5 +11,5 @@ import com.example.weblogin.domain.member.Member;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAllByitemSellStatus(ItemSellStatus saleStatus);
-    List<Item> findByAdmin(Member admin);
+    List<Item> findBySeller(Member seller);
 }

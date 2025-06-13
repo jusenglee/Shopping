@@ -4542,6 +4542,7 @@ textarea.form-control-lg {
 }
 
 .card-body {
+    width: auto;
     flex: 1 1 auto;
     padding: 1rem 1rem;
 }

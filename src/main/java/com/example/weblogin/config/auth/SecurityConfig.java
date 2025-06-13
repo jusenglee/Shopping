@@ -5,20 +5,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.example.weblogin.service.JwtTokenProvider;
 
 @EnableWebSecurity // 해당 파일로 시큐리티 활성화, springSecurityFilterChain가 자동으로 포함
 @Configuration // IoC 등록
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 	private final JwtTokenProvider tokenProvider;
 	private final PrincipalDetailsService principalDetailsService;
 
@@ -37,22 +36,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http
-			.csrf()
-			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf((csrf) -> csrf.disable());
+
+		http.authorizeHttpRequests((authorizeHttpRequests) ->
+			authorizeHttpRequests
+				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정(static에는 접근 허용)
+				.requestMatchers("**/seller/**").hasRole("SELLER")   // 해당 URL은 ADMIN 권한을 가진 사람만 접근 가능
+				.requestMatchers("**/user/**").authenticated()   // 해당 URL은 로그인한 이용자만 접근 가능
+				.requestMatchers("/members/signup", "/members/signin",
+					"/common/**").permitAll()   // 해당 URL은 로그인 없이 인증가능
+				.anyRequest().authenticated() // 그 외 모든 요청 인증처리
+		);
+
+
+			.
 			.and()
+			.csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/admin/**")
-			.hasRole("ADMIN")
-			.antMatchers("/user/**")
+			.antMatchers("**/seller/**")
+			.hasRole("SELLER")
+			.antMatchers("**/user/**")
 			.authenticated()
-			.antMatchers("/members/signup", "/members/signin", "/admin/brands", "/admin/categories", "/css/**",
-				"/img/**", "/js/**",
-				"/images/**",
-				"/common/**",
-				"/members/new")
+			.antMatchers("/members/signup", "/members/signin",
+				"/common/**")
 			.permitAll()
 			.anyRequest()
 			.permitAll()
@@ -80,13 +88,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(principalDetailsService).passwordEncoder(passwordEncoder());
-	}
-
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers(
-			"/css/**", "/img/**", "/js/**", "/images/**", "/common/**","/admin/brands", "/admin/categories"
-		);
-		web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
 }

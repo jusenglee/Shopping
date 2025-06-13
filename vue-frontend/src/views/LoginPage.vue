@@ -2,7 +2,8 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from '@/axios'
-import { useStore } from 'vuex'  // Vuex 사용 시
+import { useStore } from 'vuex'
+import api from "@/axios";  // Vuex 사용 시
 
 /* ---- Composition State ---- */
 
@@ -75,15 +76,18 @@ async function signIn() {
     const { token, username, role } = response.data
 
     // Vuex 스토어에 로그인 정보 저장
-    store.dispatch('login', { token, userInfo: { username, role } })
+    await store.dispatch('login', {token, userInfo: {username, role}})
 
     // 로그인 성공 후 리다이렉트
-    let redirectPath = route.query.redirect || '/'
-    // 혹시 query.redirect가 null이라면 main/ 로 이동
-    if (!route.query.redirect) {
-      redirectPath = '/main'
+    if (response.data.needAddress) {
+      await router.push({
+        path: "/seller/sellerModifyInfo",
+        query: { showAlert: "true" },
+      });
+    } else {
+      // 홈 화면 등으로 이동
+      this.$router.push("/");
     }
-    router.push(redirectPath)
   } catch (error) {
     if (error?.response?.status === 404) {
       alert('회원 정보가 존재하지 않습니다. ' + error)
@@ -97,24 +101,28 @@ async function signIn() {
 // 회원가입
 async function signUp() {
   try {
-    const response = await axios.post('/members/signup', userInfo)
+    const response = await api.post('/members/signup', userInfo)
     // 가입 성공 시 메시지
     alert(response.data)
     // 폼 전환: 회원가입 -> 로그인
     toggleForm()
   } catch (error) {
     console.error('회원가입 error', error)
-    alert('오류가 발생했습니다. ' + error)
+    alert('오류가 발생했습니다. ' + error.response.data.message)
   }
 }
 </script>
 
 <template>
-  <div :class="{ 'mobile-root': isMobileView }" class="root">
-
+  <div
+    :class="{ 'mobile-root': isMobileView }"
+    class="root"
+  >
     <!-- SignIn 폼 -->
-    <div :class="{ 'active': isSignInActive, 'inactive': !isSignInActive }"
-         class="signin-wrapper form">
+    <div
+      :class="{ 'active': isSignInActive, 'inactive': !isSignInActive }"
+      class="signin-wrapper form"
+    >
       <div class="form-wrapper">
         <h5>Welcome Back 👊</h5>
         <input
@@ -124,7 +132,7 @@ async function signUp() {
           placeholder="Email"
           type="text"
           @keyup.enter="signIn"
-        />
+        >
         <input
           id="password"
           v-model="credentials.password"
@@ -132,11 +140,17 @@ async function signUp() {
           placeholder="Password"
           type="password"
           @keyup.enter="signIn"
-        />
-        <button class="button primary" @click="signIn">
+        >
+        <button
+          class="button primary"
+          @click="signIn"
+        >
           Sign In
         </button>
-        <button class="button secondary" @click="toggleForm">
+        <button
+          class="button secondary"
+          @click="toggleForm"
+        >
           Sign Up
         </button>
         <p>
@@ -149,8 +163,10 @@ async function signUp() {
     </div>
 
     <!-- SignUp 폼 -->
-    <div :class="{ 'active': !isSignInActive, 'inactive': isSignInActive }"
-         class="signup-wrapper form">
+    <div
+      :class="{ 'active': !isSignInActive, 'inactive': isSignInActive }"
+      class="signup-wrapper form"
+    >
       <div class="form-wrapper">
         <h5>👋 Hello</h5>
         <input
@@ -159,43 +175,36 @@ async function signUp() {
           class="form-field"
           placeholder="Email"
           type="text"
-        />
+        >
         <input
           id="name"
           v-model="userInfo.name"
           class="form-field"
           placeholder="UserName"
           type="text"
-        />
+        >
         <input
           id="password"
           v-model="userInfo.password"
           class="form-field"
           placeholder="Password"
           type="password"
-        />
-        <input
-          id="address"
-          v-model="userInfo.address"
-          class="form-field"
-          placeholder="address"
-          type="text"
-        />
+        >
         <input
           id="phone"
           v-model="userInfo.phone"
           class="form-field"
           placeholder="phone"
           type="text"
-        />
+        >
         <div class="form-field">
           <label class="radio-label">
             <input
               v-model="userInfo.role"
               name="role"
               type="radio"
-              value="ROLE_USER"
-            />
+              value="USER"
+            >
             구매자
           </label>
           <label class="radio-label">
@@ -203,23 +212,24 @@ async function signUp() {
               v-model="userInfo.role"
               name="role"
               type="radio"
-              value="ROLE_ADMIN"
-            />
+              value="SELLER"
+            >
             판매자
           </label>
         </div>
-        <button class="button primary" @click="signUp">
+        <button
+          class="button primary"
+          @click="signUp"
+        >
           Sign Up
         </button>
-        <button class="button secondary" @click="toggleForm">
+        <button
+          class="button secondary"
+          @click="toggleForm"
+        >
           Sign In
         </button>
-        <p>
-          view concept for
-          <a @click="toggleView(true)"><b>mobile</b></a>
-          or for
-          <a @click="toggleView(false)"><b>desktop</b></a>
-        </p>
+
       </div>
     </div>
   </div>

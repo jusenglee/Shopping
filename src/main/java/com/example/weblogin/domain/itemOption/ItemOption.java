@@ -1,6 +1,5 @@
 package com.example.weblogin.domain.itemOption;
 
-import java.awt.*;
 import java.util.Optional;
 
 import javax.persistence.Entity;
@@ -14,16 +13,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.example.weblogin.domain.DTO.ItemOptionRequest;
+import com.example.weblogin.domain.dto.request.ItemOptionRequest;
 import com.example.weblogin.domain.item.Item;
 
-import com.example.weblogin.domain.item.ItemSellStatus;
 import com.example.weblogin.service.Utils;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "item_option")
