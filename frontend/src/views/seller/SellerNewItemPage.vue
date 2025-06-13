@@ -33,12 +33,13 @@ function handleFilePondInit() {
 /// 이미지 로드
 async function loadProductImages(itemId) {
   try {
-    initialFiles.value = response.data.map(img => ({
-      source: `http://localhost:8080/common/getImage/${img.id}`,
-      options: {
-        name: img.oriImgName,
-      },
-    }));
+    const { data } = await api.get(`/getItemDetails/${itemId}`);
+    if (data.itemImgList) {
+      initialFiles.value = data.itemImgList.map(img => ({
+        source: `http://localhost:8080/common/getImage/${img.id}`,
+        options: { name: img.oriImgName },
+      }));
+    }
   } catch (error) {
     console.error('Failed to load product images:', error);
   }

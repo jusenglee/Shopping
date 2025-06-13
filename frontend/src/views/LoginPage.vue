@@ -229,7 +229,6 @@ async function signUp() {
         >
           Sign In
         </button>
-
       </div>
     </div>
   </div>
