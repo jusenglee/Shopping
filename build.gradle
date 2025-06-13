@@ -11,6 +11,13 @@ plugins {
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 // Spring Boot 3.x는 최소 Java 17을 요구하므로 sourceCompatibility를 17로 업데이트합니다.
@@ -77,15 +84,21 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    querydsl {
+        extendsFrom annotationProcessor
+        extendsFrom compileClasspath
+    }
 }
 
 // Querydsl 설정
-def querydslDir = "$buildDir/generated/querydsl"
-
 sourceSets {
     main.java.srcDir querydslDir
 }
 
 tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
+}
+
+tasks.named('compileQuerydsl').configure {
     options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
