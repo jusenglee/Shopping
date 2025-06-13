@@ -7,8 +7,6 @@ import com.example.weblogin.config.Exception.ItemNotFoundException;
 import com.example.weblogin.domain.dto.response.ItemResponseDTO;
 import com.example.weblogin.domain.item.Item;
 import com.example.weblogin.domain.item.ItemRepository;
-import com.example.weblogin.domain.itemCategory.BrandRepository;
-import com.example.weblogin.domain.itemCategory.CategorieRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 public class ItemService {
 
     private final ItemRepository itemRepository;
-    private final FileService fileService;
-    private final CategorieRepository categorieRepository;
-    private final BrandRepository brandRepository;
 
     // 상품정보 가져오기
     @Transactional(readOnly = true)
