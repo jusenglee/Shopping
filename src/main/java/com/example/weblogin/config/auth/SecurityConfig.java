@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,41 +35,37 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf((csrf) -> csrf.disable());
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http.csrf(csrf -> csrf.disable())
+                        .authorizeHttpRequests(auth -> auth
+                                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                                .requestMatchers("/seller/**").hasRole("SELLER")
+                                .requestMatchers("/user/**").authenticated()
+                                .requestMatchers("/members/signup", "/members/signin", "/common/**").permitAll()
+                                .anyRequest().authenticated()
+                        )
+                        .formLogin(form -> form
+                                .loginPage("/members/signin")
+                                .usernameParameter("email")
+                                .successHandler(new CustomAuthenticationSuccessHandler(tokenProvider))
+                                .failureHandler(new CustomAuthenticationFailureHandler())
+                        )
+                        .logout(logout -> logout
+                                .logoutUrl("/members/logout")
+                                .logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
+                                .logoutSuccessUrl("/")
+                                .invalidateHttpSession(true)
+                                .deleteCookies("JSESSIONID")
+                        )
+                        .exceptionHandling(ex -> ex.accessDeniedPage("/access-denied"));
 
-		http.authorizeHttpRequests((authorizeHttpRequests) ->
-			authorizeHttpRequests
-				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정(static에는 접근 허용)
-				.requestMatchers("**/seller/**").hasRole("SELLER")   // 해당 URL은 ADMIN 권한을 가진 사람만 접근 가능
-				.requestMatchers("**/user/**").authenticated()   // 해당 URL은 로그인한 이용자만 접근 가능
-				.requestMatchers("/members/signup", "/members/signin",
-					"/common/**").permitAll()   // 해당 URL은 로그인 없이 인증가능
-				.anyRequest().authenticated()
-				.and()
-				.formLogin()
-				.loginPage("/members/signin")
-				.usernameParameter("email")
-				.successHandler(new CustomAuthenticationSuccessHandler(tokenProvider)) // 인증 성공 핸들러 등록
-				.failureHandler(new CustomAuthenticationFailureHandler())
-				.and()
-				.logout()
-				.logoutUrl("/members/logout")
-				.logoutRequestMatcher(new AntPathRequestMatcher("/members/logout"))
-				.logoutSuccessUrl("/")
-				.invalidateHttpSession(true)
-				.deleteCookies("JSESSIONID")
-				.and()
-				.exceptionHandling()
-				.accessDeniedPage("/access-denied");
+                http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                return http.build();
+        }
 
-		//JWTAuthenticationFilter 추가
-		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-	}
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(principalDetailsService).passwordEncoder(passwordEncoder());
-	}
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+                auth.userDetailsService(principalDetailsService).passwordEncoder(passwordEncoder());
+        }
 }
