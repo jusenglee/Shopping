@@ -1,6 +1,6 @@
 package com.example.weblogin.domain.file;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.example.weblogin.domain.dto.FileDTO;
 
