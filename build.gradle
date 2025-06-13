@@ -5,9 +5,10 @@ buildscript {
     }
 }
 plugins {
-    id 'org.springframework.boot' version '3.1.2' // 스프링 부트 버전 업그레이드
+    id 'org.springframework.boot' version '3.1.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'com.example'
@@ -47,6 +48,8 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
 
     // Querydsl 관련 의존성
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
 
     // JWT (중복 제거)
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
@@ -76,3 +79,12 @@ configurations {
 }
 
 // Querydsl 설정
+def querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
+}
