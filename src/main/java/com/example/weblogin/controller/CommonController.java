@@ -1,6 +1,5 @@
 package com.example.weblogin.controller;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,7 +88,7 @@ public class CommonController {
 	 * @throws Exception
 	 */
 	@GetMapping("/getImage/{imageId}")
-	public ResponseEntity<byte[]> getImage(@PathVariable Long imageId) throws IOException {
+        public ResponseEntity<byte[]> getImage(@PathVariable Long imageId) {
 		byte[] imageBytes = fileService.loadFileAsResource(imageId);
 		return ResponseEntity.ok()
 			.contentType(MediaType.IMAGE_JPEG)
