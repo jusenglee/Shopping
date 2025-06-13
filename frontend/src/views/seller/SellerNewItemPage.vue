@@ -33,7 +33,8 @@ function handleFilePondInit() {
 /// 이미지 로드
 async function loadProductImages(itemId) {
   try {
-    initialFiles.value = response.data.map(img => ({
+    const res = await api.get(`/seller/item/${itemId}/images`);
+    initialFiles.value = res.data.map(img => ({
       source: `http://localhost:8080/common/getImage/${img.id}`,
       options: {
         name: img.oriImgName,

@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/common")
-public class CommonControlller {
+public class CommonController {
 	private final CategorieRepository categorieRepository;
 	private final BrandRepository brandRepository;
 	private final FileService fileService;
