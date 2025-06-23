@@ -13,6 +13,18 @@
 ./gradlew bootRun
 ```
 
+### WebSocket 테스트
+서버가 실행 중일 때 다음 스크립트를 브라우저 콘솔에서 실행하면 에코 메시지를 확인할 수 있습니다.
+
+```javascript
+const sock = new SockJS('http://localhost:8080/ws');
+const client = Stomp.over(sock);
+client.connect({}, () => {
+  client.subscribe('/topic/echo', msg => console.log(msg.body));
+  client.send('/app/echo', {}, 'hello');
+});
+```
+
 테스트 실행:
 
 ```bash
@@ -32,4 +44,3 @@ npm run serve
 ```bash
 npm run build
 ```
-
