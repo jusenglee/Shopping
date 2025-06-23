@@ -20,12 +20,16 @@ import jakarta.validation.constraints.NotBlank;
 public class ItemOptionRequest {
 
 	@NotBlank(message = "색상 필수 입력 값입니다. ")
+	@Builder.Default
 	private String color = null;
 	@NotBlank(message = "사이즈 필수 입력 값입니다. ")
+	@Builder.Default
 	private String size = null;
 	@NotBlank(message = "소재 필수 입력 값입니다. ")
+	@Builder.Default
 	private String material = null;
 	@Min(value = 1, message = "재고 필수 입력 값입니다. ")
+	@Builder.Default
 	private Integer stock = null;
 
 	public static ItemOptionRequest toDTO(ItemOption entity) {

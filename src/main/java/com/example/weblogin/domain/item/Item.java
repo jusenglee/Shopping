@@ -74,10 +74,10 @@ public class Item extends BaseEntity {
 	private Brand brand;    //브랜드 번호
 
 	@Column(columnDefinition = "integer default 0", nullable = false)
-	private Integer heart = 0; // 좋아요 수
+	private Integer heart; // 좋아요 수
 
 	@Column(columnDefinition = "integer default 0", nullable = false)
-	private Integer countview = 0; //조회수
+	private Integer countview; //조회수
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<File> itemImages; // 상품 이미지

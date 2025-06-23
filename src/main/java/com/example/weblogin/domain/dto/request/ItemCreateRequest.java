@@ -50,11 +50,11 @@ public class ItemCreateRequest  {
 
 	private List<FileDTO> itemImgDtoList;
 
-	private Integer countview = 0;
+	private Integer countview;
 
-	private Integer heart = 0;
+	private Integer heart;
 
-	private Integer salePer = 0;
+	private Integer salePer;
 
 	private Long sellerId;
 
